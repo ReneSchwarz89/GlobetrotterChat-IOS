@@ -7,16 +7,33 @@
 import SwiftUI
 
 import SwiftUI
+import Observation
 
 struct ProfileView: View {
-    
-    @Environment(AuthViewModel.self) private var authViewModel
-    
+    @State private var errorMessage: String?
+    @State private var isPresentingError = false
     var body: some View {
-        VStack {
-            Text("User Profile")
-            Button("Sign Out") {
-                authViewModel.signOut()
+        NavigationStack{
+            VStack {
+                Button("Print Personal Data") {
+                    print(AuthServiceManager.shared.isUserSignedIn)
+                    print(AuthServiceManager.shared.userID as Any)
+                    print(AuthServiceManager.shared.onBoardingStatus)
+                }
+                Text("User Profile")
+                Button("Sign Out") {
+                                do {
+                                    try AuthServiceManager.shared.signOut()
+                                    print(AuthServiceManager.shared.isUserSignedIn)
+                                    print(AuthServiceManager.shared.userID as Any)
+                                    print(AuthServiceManager.shared.onBoardingStatus)
+                                } catch {
+                                    print("Error signing out: \(error)")
+                                }
+                            }
+            }
+            .alert(isPresented: $isPresentingError) {
+                Alert(title: Text("Error"), message: Text(errorMessage ?? "Unknown error"), dismissButton: .default(Text("OK")))
             }
         }
     }

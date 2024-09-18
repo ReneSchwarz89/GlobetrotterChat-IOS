@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Observation
 
 struct AuthenticationView: View {
     @State private var isPasswordVisible: Bool = false
@@ -13,7 +14,7 @@ struct AuthenticationView: View {
     @State private var hasPressedSignIn = false
     @State private var lastErrorMessage = ""
     @State private var isPresentingError = false
-    @Bindable var viewModel : AuthViewModel
+    @Bindable var viewModel = AuthViewModel()
     
     var body: some View {
         NavigationStack() {
@@ -30,16 +31,14 @@ struct AuthenticationView: View {
                     
                     Text("Welcome To The")
                         .font(.system(size: 28, weight: .black))
-                        .foregroundColor(.green)
+                        .foregroundColor(.arcticBlue)
                         .background(.white)
                     
                     Text("GlobetrotterChat")
                         .font(.system(size: 40, weight: .black))
-                        .foregroundColor(.green)
+                        .foregroundColor(.arcticBlue)
                         .background(.white)
-                    
                     Spacer()
-                    
                     
                     // Textfelder und Button
                     VStack(spacing: 20) {
@@ -65,10 +64,7 @@ struct AuthenticationView: View {
                                     .frame(height: 50)
                             }
                             
-                            Button(action: {
-                                // Umschalten der Sichtbarkeit des Passworts
-                                self.isPasswordVisible.toggle()
-                            }) {
+                            Button(action: { self.isPasswordVisible.toggle() }) {
                                 Image(systemName: self.isPasswordVisible ? "eye.slash.fill" : "eye.fill")
                                     .foregroundColor(self.isPasswordVisible ? Color.green : .gray.opacity(0.7))
                                     .padding(.trailing)
@@ -79,6 +75,7 @@ struct AuthenticationView: View {
                         .shadow(radius: 5)
                         
                         Button(action: {
+                            hasPressedSignUp = true
                             viewModel.signUp(email: viewModel.email, password: viewModel.password)
                         }) {
                             ZStack {
@@ -97,7 +94,7 @@ struct AuthenticationView: View {
                                     .frame(maxWidth: .infinity)
                             }
                             .frame(height: 50)
-                            .background(Color.green.opacity(0.7))
+                            .background(Color.arcticBlue.opacity(0.7))
                             .cornerRadius(25)
                             .shadow(radius: 5)
                         }
@@ -107,6 +104,7 @@ struct AuthenticationView: View {
                     
                     // Sign In Button
                     Button(action: {
+                        hasPressedSignIn = true
                         viewModel.signIn(email: viewModel.email, password: viewModel.password)
                     }) {
                         ZStack {
@@ -114,13 +112,20 @@ struct AuthenticationView: View {
                                 Spacer()
                                 if hasPressedSignIn {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .green))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .arcticBlue))
                                         .padding(.trailing, 16)
+                                } else {
+                                    VStack {
+                                        Image(systemName: "arrow.2.circlepath.circle")
+                                            .font(.title)
+                                            .foregroundColor(.white)
+                                        Spacer()
+                                    }
                                 }
                             }
                             Text("Sign In")
                                 .font(.headline)
-                                .foregroundColor(.green)
+                                .foregroundColor(.arcticBlue)
                                 .padding()
                                 .frame(maxWidth: .infinity)
                         }
@@ -135,6 +140,11 @@ struct AuthenticationView: View {
                     
                     Spacer()
                 }
+            }
+        }
+        .alert(isPresented: .constant(viewModel.error != nil), error: viewModel.error) {
+            Button("OK", role: .cancel) {
+                viewModel.error = nil ;hasPressedSignUp = false ;hasPressedSignIn = false
             }
         }
     }
