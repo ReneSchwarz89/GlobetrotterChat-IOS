@@ -15,7 +15,7 @@ import Observation
     var onBoardingStatus: OnboardingStatus = .neutral
     
     private let auth = Auth.auth()
-    private var user: FirebaseAuth.User?
+    var user: FirebaseAuth.User?
     var isUserSignedIn: Bool { user != nil }
     var userID: String? { user?.uid }
     

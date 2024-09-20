@@ -8,14 +8,14 @@
 import SwiftUI
 import Observation
 
-enum Tab {
+enum Tab: Int {
     case chats
     case contacts
     case profile
 }
 
 struct ContentView: View {
-    @State var selectedTab: Tab = .chats
+    @State var selectedTab: Tab = UserDefaults.standard.selectedTab
     private var authServiceManager = AuthServiceManager.shared
     
     var body: some View {
@@ -31,7 +31,7 @@ struct ContentView: View {
                     .tabItem { Label("Contacts", systemImage: "person.2") }
                     .tag(Tab.contacts)
                 
-                ProfileView()
+                ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: "\(authServiceManager.user?.uid ?? "")")))
                     .tabItem { Label("Profile", systemImage: "person") }
                     .tag(Tab.profile)
             }
@@ -42,6 +42,25 @@ struct ContentView: View {
                     $selectedTab.wrappedValue = .profile
                 }
             }
+            .onChange(of: selectedTab) { oldvalue, newValue in
+                UserDefaults.standard.selectedTab = newValue
+            }
+        }
+    }
+}
+
+extension UserDefaults {
+    private enum Keys {
+        static let selectedTab = "selectedTab"
+    }
+    
+    var selectedTab: Tab {
+        get {
+            let rawValue = integer(forKey: Keys.selectedTab)
+            return Tab(rawValue: rawValue) ?? .chats
+        }
+        set {
+            set(newValue.rawValue, forKey: Keys.selectedTab)
         }
     }
 }

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B53E959F2C9C6206003D89B1 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53E959E2C9C61FF003D89B1 /* Profile.swift */; };
+		B53E95A12C9C6E8A003D89B1 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53E95A02C9C6E7F003D89B1 /* ProfileManager.swift */; };
+		B54ED3212C9C8EAA00B84954 /* FirebaseProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3202C9C8E9D00B84954 /* FirebaseProfileManager.swift */; };
 		B5754AD72C8E25FF0010B5F5 /* GlobetrotterChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */; };
 		B5754AD92C8E25FF0010B5F5 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD82C8E25FF0010B5F5 /* AuthenticationView.swift */; };
 		B5754ADB2C8E26000010B5F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5754ADA2C8E26000010B5F5 /* Assets.xcassets */; };
@@ -32,6 +35,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B53E959E2C9C61FF003D89B1 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		B53E95A02C9C6E7F003D89B1 /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
+		B54ED3202C9C8E9D00B84954 /* FirebaseProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseProfileManager.swift; sourceTree = "<group>"; };
 		B5754AD32C8E25FF0010B5F5 /* GlobetrotterChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlobetrotterChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobetrotterChatApp.swift; sourceTree = "<group>"; };
 		B5754AD82C8E25FF0010B5F5 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
@@ -89,6 +95,7 @@
 			children = (
 				B5754ADA2C8E26000010B5F5 /* Assets.xcassets */,
 				B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */,
+				B583C49E2C957CA500D1E004 /* ContentView.swift */,
 				B583C4792C945E4200D1E004 /* Landing */,
 				B5754AE42C8E293B0010B5F5 /* Models */,
 				B5754AE72C8E29AB0010B5F5 /* Manager */,
@@ -111,6 +118,7 @@
 		B5754AE42C8E293B0010B5F5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B53E959E2C9C61FF003D89B1 /* Profile.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -121,7 +129,6 @@
 				B5754AFD2C8E44220010B5F5 /* ProfileView.swift */,
 				B583C4732C9453A200D1E004 /* ContactView.swift */,
 				B583C4772C94576700D1E004 /* ChatsView.swift */,
-				B583C49E2C957CA500D1E004 /* ContentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -139,6 +146,8 @@
 		B5754AE72C8E29AB0010B5F5 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
+				B54ED3202C9C8E9D00B84954 /* FirebaseProfileManager.swift */,
+				B53E95A02C9C6E7F003D89B1 /* ProfileManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -255,7 +264,10 @@
 			files = (
 				B5754AFE2C8E44220010B5F5 /* ProfileView.swift in Sources */,
 				B583C47D2C945F3300D1E004 /* ContactViewModel.swift in Sources */,
+				B54ED3212C9C8EAA00B84954 /* FirebaseProfileManager.swift in Sources */,
 				B583C4A52C98393C00D1E004 /* AuthManager.swift in Sources */,
+				B53E95A12C9C6E8A003D89B1 /* ProfileManager.swift in Sources */,
+				B53E959F2C9C6206003D89B1 /* Profile.swift in Sources */,
 				B583C47F2C945F4400D1E004 /* ChatsViewModel.swift in Sources */,
 				B583C49F2C957CA500D1E004 /* ContentView.swift in Sources */,
 				B583C4782C94576700D1E004 /* ChatsView.swift in Sources */,
