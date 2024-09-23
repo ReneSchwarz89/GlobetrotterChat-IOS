@@ -11,49 +11,46 @@ import Observation
     
     var nickname: String = ""
     var nativeLanguage: String = ""
-    var profileImageURL: String?
+    var profileImage: String?
     private var lastErrorMessage = ""
     
     private var manager: ProfileManager
+    var profile: Profile?
     
     init(manager: ProfileManager) {
         self.manager = manager
-    }
-    
-    func createProfile() {
-        Task {
-            do {
-                let profile = Profile(nickname: nickname, nativeLanguage: nativeLanguage)
-                try await manager.createProfile(profile)
-                nickname = profile.self.nickname
-                nativeLanguage = profile.self.nativeLanguage
-            } catch {
-                lastErrorMessage = error.localizedDescription
-                print(lastErrorMessage)
-            }
-        }
+        self.loadProfile()
+        
     }
     
     func loadProfile() {
         Task {
             do {
                 try await manager.loadProfile()
+                DispatchQueue.main.async {
+                    self.profile = self.manager.profile
+                    self.nickname = self.profile?.nickname ?? ""
+                    self.nativeLanguage = self.profile?.nativeLanguage ?? ""
+                    print("Profile loaded: \(String(describing: self.profile))")
+                }
             } catch {
-                lastErrorMessage = error.localizedDescription
-                print(lastErrorMessage)
+                print("Error loading profile: \(error)")
             }
         }
     }
     
-    func updateProfile() async throws{
-        Task {
-            do {
-                let newProfile = Profile(nickname: nickname, nativeLanguage: nativeLanguage)
-                try await manager.updateProfile(newProfile)
-            } catch {
-                lastErrorMessage = error.localizedDescription
-                print(lastErrorMessage)
+    func saveProfile() {
+            Task {
+                do {
+                    let profile = Profile(nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
+                    try await manager.saveProfile(profile)
+                    DispatchQueue.main.async {
+                        self.profile = profile
+                        print("Profile saved: \(profile)")
+                    }
+                } catch {
+                    print("Error saving profile: \(error)")
+                }
             }
         }
-    }
 }

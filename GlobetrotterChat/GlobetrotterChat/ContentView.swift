@@ -31,7 +31,7 @@ struct ContentView: View {
                     .tabItem { Label("Contacts", systemImage: "person.2") }
                     .tag(Tab.contacts)
                 
-                ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: "\(authServiceManager.user?.uid ?? "")")))
+                ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: "\(AuthServiceManager.shared.user?.uid ?? "")")))
                     .tabItem { Label("Profile", systemImage: "person") }
                     .tag(Tab.profile)
             }

@@ -18,7 +18,7 @@ class FirebaseProfileManager: ProfileManager {
         self.uid = uid
     }
     
-    func createProfile(_ profile: Profile) async throws {
+    private func createProfile(_ profile: Profile) async throws {
         try Firestore.firestore().collection("Profiles").document(uid).setData(from: profile)
         try await loadProfile()
     }
@@ -29,8 +29,21 @@ class FirebaseProfileManager: ProfileManager {
         self.profile = profile
     }
     
-    func updateProfile(_ profile: Profile) async throws {
-            try Firestore.firestore().collection("Profiles").document(uid).setData(from: profile, merge: true)
-            try await loadProfile()
+    private func updateProfile(_ profile: Profile) async throws {
+        try Firestore.firestore().collection("Profiles").document(uid).setData(from: profile, merge: true)
+        try await loadProfile()
+    }
+    
+    func saveProfile(_ profile: Profile) async throws {
+        if try await profileExists() {
+            try await updateProfile(profile)
+        } else {
+            try await createProfile(profile)
         }
+    }
+    
+    private func profileExists() async throws -> Bool {
+        let document = try await Firestore.firestore().collection("Profiles").document(uid).getDocument()
+        return document.exists
+    }
 }

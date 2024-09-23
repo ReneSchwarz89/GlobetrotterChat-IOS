@@ -4,7 +4,6 @@
 //
 //  Created by René Schwarz on 08.09.24.
 //
-import UIKit
 
 import SwiftUI
 import Observation
@@ -12,14 +11,14 @@ import FirebaseStorage
 
 struct ProfileView: View {
     
-    @Bindable var viewModel: ProfileViewModel
+    @State var viewModel : ProfileViewModel
     @State var isImagePickerPresented: Bool = false
     @State private var errorMessage: String?
     @State private var isPresentingError = false
     let languages = ["English", "Deutsch", "Español", "Français", "中文", "日本語", "한국어", "Italiano"]
     
     var body: some View {
-        NavigationStack{
+        NavigationStack {
             VStack(spacing: 20) {
                 
                 // Nickname-Textfeld
@@ -50,7 +49,7 @@ struct ProfileView: View {
                 .shadow(radius: 5)
                 
                 Button(action: {
-                    viewModel.createProfile()
+                    viewModel.saveProfile()
                 }) {
                     Text("Save")
                         .font(.headline)
@@ -83,6 +82,7 @@ struct ProfileView: View {
             .alert(isPresented: $isPresentingError) {
                 Alert(title: Text("Error"), message: Text(errorMessage ?? "Unknown error"), dismissButton: .default(Text("OK")))
             }
+            .onAppear { viewModel.loadProfile() }
         }
     }
 }
