@@ -7,14 +7,14 @@
 import Foundation
 import UIKit
 
-struct Profile: Codable {
+struct Contact: Codable {
     var nickname: String
     var nativeLanguage: String
     var profileImage: String?
 }
 
-extension Profile {
-    static func sample() -> Profile {
+extension Contact {
+    static func sample() -> Contact {
         .init(nickname: "New User", nativeLanguage: "de", profileImage: nil)
     }
 }

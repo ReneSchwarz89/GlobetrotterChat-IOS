@@ -14,25 +14,22 @@ import Observation
     var profileImage: String?
     private var lastErrorMessage = ""
     
-    private var manager: ProfileManager
-    var profile: Profile?
+    private var manager: ContactManager
+    var contact: Contact?
     
-    init(manager: ProfileManager) {
+    init(manager: ContactManager) {
         self.manager = manager
-        self.loadProfile()
-        
     }
     
     func loadProfile() {
         Task {
             do {
-                try await manager.loadProfile()
-                DispatchQueue.main.async {
-                    self.profile = self.manager.profile
-                    self.nickname = self.profile?.nickname ?? ""
-                    self.nativeLanguage = self.profile?.nativeLanguage ?? ""
-                    print("Profile loaded: \(String(describing: self.profile))")
-                }
+                try await manager.loadContact()
+                
+                    self.contact = self.manager.contact
+                    self.nickname = self.contact?.nickname ?? ""
+                    self.nativeLanguage = self.contact?.nativeLanguage ?? ""
+                
             } catch {
                 print("Error loading profile: \(error)")
             }
@@ -40,17 +37,14 @@ import Observation
     }
     
     func saveProfile() {
-            Task {
-                do {
-                    let profile = Profile(nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
-                    try await manager.saveProfile(profile)
-                    DispatchQueue.main.async {
-                        self.profile = profile
-                        print("Profile saved: \(profile)")
-                    }
-                } catch {
-                    print("Error saving profile: \(error)")
-                }
+        Task {
+            do {
+                let contact = Contact(nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
+                try await manager.saveContact(contact)
+                self.contact = contact
+            } catch {
+                print("Error saving profile: \(error)")
             }
         }
+    }
 }
