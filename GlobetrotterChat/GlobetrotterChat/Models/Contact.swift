@@ -5,19 +5,36 @@
 //  Created by René Schwarz on 19.09.24.
 //
 import Foundation
-import UIKit
 
 struct Contact: Codable {
+    var contactID: String
     var nickname: String
     var nativeLanguage: String
     var profileImage: String?
+    
+    init(contactID: String, nickname: String, nativeLanguage: String, profileImage: String? = nil) {
+        self.contactID = contactID
+        self.nickname = nickname
+        self.nativeLanguage = nativeLanguage
+        self.profileImage = profileImage
+    }
+    
+    func toDictionary() -> [String: Any] {
+        return [
+            "contactID": contactID,
+            "nickname": nickname,
+            "nativeLanguage": nativeLanguage,
+            "profileImage": profileImage ?? ""
+        ]
+    }
 }
 
 extension Contact {
     static func sample() -> Contact {
-        .init(nickname: "New User", nativeLanguage: "de", profileImage: nil)
+        .init(contactID: "",nickname: "New User", nativeLanguage: "de", profileImage: nil)
     }
 }
+
 /*
  
 

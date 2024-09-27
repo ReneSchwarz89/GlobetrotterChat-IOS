@@ -9,15 +9,16 @@ import Observation
 
 @Observable class ProfileViewModel {
     
+    var contactID: String = ""
     var nickname: String = ""
     var nativeLanguage: String = ""
     var profileImage: String?
     private var lastErrorMessage = ""
     
-    private var manager: ContactManager
+    private var manager: ProfileProtocol
     var contact: Contact?
     
-    init(manager: ContactManager) {
+    init(manager: ProfileProtocol) {
         self.manager = manager
     }
     
@@ -27,6 +28,7 @@ import Observation
                 try await manager.loadContact()
                 
                     self.contact = self.manager.contact
+                    self.contactID = AuthServiceManager.shared.userID ?? ""
                     self.nickname = self.contact?.nickname ?? ""
                     self.nativeLanguage = self.contact?.nativeLanguage ?? ""
                 
@@ -39,7 +41,7 @@ import Observation
     func saveProfile() {
         Task {
             do {
-                let contact = Contact(nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
+                let contact = Contact(contactID: AuthServiceManager.shared.userID ?? "",nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
                 try await manager.saveContact(contact)
                 self.contact = contact
             } catch {

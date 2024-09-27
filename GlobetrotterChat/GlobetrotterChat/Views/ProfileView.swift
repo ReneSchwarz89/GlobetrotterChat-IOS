@@ -88,7 +88,7 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView(viewModel: ProfileViewModel(manager: FirebaseContactManager(uid: "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
+    ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
 }
 
 

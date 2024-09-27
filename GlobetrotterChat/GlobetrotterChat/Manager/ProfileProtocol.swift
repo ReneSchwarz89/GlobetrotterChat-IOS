@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol ContactManager {
+protocol ProfileProtocol {
     var contact: Contact? { get set }
     
     func loadContact() async throws
