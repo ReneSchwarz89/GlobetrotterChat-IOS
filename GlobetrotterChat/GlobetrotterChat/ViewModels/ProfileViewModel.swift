@@ -15,10 +15,10 @@ import Observation
     var profileImage: String?
     private var lastErrorMessage = ""
     
-    private var manager: ProfileProtocol
+    private var manager: ProfileManagerProtocol
     var contact: Contact?
     
-    init(manager: ProfileProtocol) {
+    init(manager: ProfileManagerProtocol) {
         self.manager = manager
     }
     

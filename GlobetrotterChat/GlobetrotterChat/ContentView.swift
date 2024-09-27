@@ -27,7 +27,7 @@ struct ContentView: View {
                     .tabItem { Label("Chats", systemImage: "message") }
                     .tag(Tab.chats)
                 
-                ContactView(viewModel: ContactViewModel(manager: FirebaseProfileManager(uid: "\(AuthServiceManager.shared.user?.uid ?? "")")))
+                ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager()))
                     .tabItem { Label("Contacts", systemImage: "person.2") }
                     .tag(Tab.contacts)
                 

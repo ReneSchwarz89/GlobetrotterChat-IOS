@@ -1,49 +1,43 @@
+
 //
-//  FIrebaseProfileManager.swift
+//  FirebaseContactManager.swift
 //  GlobetrotterChat
 //
-//  Created by René Schwarz on 19.09.24.
+//  Created by René Schwarz on 26.09.24.
 //
-
-import Foundation
+import SwiftUI
 import FirebaseFirestore
-import Observation
 
-class FirebaseContactManager: ContactManager {
+class FirebaseContactManager: ContactManagerProtocol {
     
-    var contact: Contact?
-    private let uid: String
+    private var db = Firestore.firestore()
     
-    init(uid: String) {
-        self.uid = uid
-    }
-    
-    private func createContact(_ contact: Contact) async throws {
-        try Firestore.firestore().collection("Contacts").document(uid).setData(from: contact)
-        try await loadContact()
-    }
-    
-    func loadContact() async throws {
-        let document = try await Firestore.firestore().collection("Contacts").document(uid).getDocument()
-        let contact = try document.data(as: Contact.self)
-        self.contact = contact
-    }
-    
-    private func updateContact(_ contact: Contact) async throws {
-        try Firestore.firestore().collection("Contacts").document(uid).setData(from: contact, merge: true)
-        try await loadContact()
-    }
-    
-    func saveContact(_ contact: Contact) async throws {
-        if try await profileExists() {
-            try await updateContact(contact)
-        } else {
-            try await createContact(contact)
+    func updateRequestStatus(request: ContactRequest, to newStatus: RequestStatus) async throws {
+        let query = db.collection("ContactRequests")
+            .whereField("from", isEqualTo: request.from)
+            .whereField("to", isEqualTo: request.to)
+            .whereField("status", isEqualTo: RequestStatus.pending.rawValue)
+        
+        let snapshot = try await query.getDocuments()
+        guard let document = snapshot.documents.first else { return }
+        
+        try await document.reference.updateData(["status": newStatus.rawValue])
+        
+        if newStatus == .allowed {
+            try await addAcceptedContact(uid: request.to, contactID: request.from)
+            try await addAcceptedContact(uid: request.from, contactID: request.to)
         }
     }
     
-    private func profileExists() async throws -> Bool {
-        let document = try await Firestore.firestore().collection("Contacts").document(uid).getDocument()
-        return document.exists
+    func addAcceptedContact(uid: String, contactID: String) async throws {
+        let document = try await db.collection("Contacts").document(contactID).getDocument()
+        if let contact = try document.data(as: Contact?.self) {
+            try await db.collection("Contacts").document(uid).collection("AcceptedContacts").document(contactID).setData(contact.toDictionary())
+        }
+    }
+    
+    func sendContactRequest(from: String, to: String) async throws {
+        let request = ContactRequest(from: from, to: to, status: .pending)
+        try await db.collection("ContactRequests").addDocument(data: request.toDictionary())
     }
 }

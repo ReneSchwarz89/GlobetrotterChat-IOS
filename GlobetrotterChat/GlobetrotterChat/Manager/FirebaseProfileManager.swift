@@ -1,5 +1,5 @@
 //
-//  FIrebaseProfileManager.swift
+//  FirebaseProfileManager.swift
 //  GlobetrotterChat
 //
 //  Created by René Schwarz on 19.09.24.
@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestore
 import Observation
 
-class FirebaseProfileManager: ProfileProtocol {
+class FirebaseProfileManager: ProfileManagerProtocol {
     
     var contact: Contact?
     private let uid: String

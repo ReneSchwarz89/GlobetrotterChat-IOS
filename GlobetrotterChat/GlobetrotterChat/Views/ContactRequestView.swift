@@ -52,7 +52,4 @@ struct ContactRequestView: View {
     }
 }
 
-#Preview {
-    ContactRequestView(viewModel: ContactViewModel(manager: FirebaseProfileManager(uid: "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
-}
 

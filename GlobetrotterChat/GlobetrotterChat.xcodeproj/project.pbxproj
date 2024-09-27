@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		B53E959F2C9C6206003D89B1 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53E959E2C9C61FF003D89B1 /* Contact.swift */; };
-		B53E95A12C9C6E8A003D89B1 /* ProfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53E95A02C9C6E7F003D89B1 /* ProfileProtocol.swift */; };
+		B53E95A12C9C6E8A003D89B1 /* ProfileManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53E95A02C9C6E7F003D89B1 /* ProfileManagerProtocol.swift */; };
 		B54ED3212C9C8EAA00B84954 /* FirebaseProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3202C9C8E9D00B84954 /* FirebaseProfileManager.swift */; };
 		B54ED3322CA301B400B84954 /* ContactRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3312CA301B400B84954 /* ContactRequest.swift */; };
 		B54ED3342CA6AF6900B84954 /* FirebaseContactManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3332CA6AF6900B84954 /* FirebaseContactManager.swift */; };
-		B54ED3362CA6AF9900B84954 /* ContactProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3352CA6AF9500B84954 /* ContactProtocol.swift */; };
+		B54ED3362CA6AF9900B84954 /* ContactManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3352CA6AF9500B84954 /* ContactManagerProtocol.swift */; };
 		B54ED3382CA6B6EE00B84954 /* ContactRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3372CA6B6EE00B84954 /* ContactRequestView.swift */; };
 		B5754AD72C8E25FF0010B5F5 /* GlobetrotterChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */; };
 		B5754AD92C8E25FF0010B5F5 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD82C8E25FF0010B5F5 /* AuthenticationView.swift */; };
@@ -40,11 +40,11 @@
 
 /* Begin PBXFileReference section */
 		B53E959E2C9C61FF003D89B1 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
-		B53E95A02C9C6E7F003D89B1 /* ProfileProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileProtocol.swift; sourceTree = "<group>"; };
+		B53E95A02C9C6E7F003D89B1 /* ProfileManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManagerProtocol.swift; sourceTree = "<group>"; };
 		B54ED3202C9C8E9D00B84954 /* FirebaseProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseProfileManager.swift; sourceTree = "<group>"; };
 		B54ED3312CA301B400B84954 /* ContactRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRequest.swift; sourceTree = "<group>"; };
 		B54ED3332CA6AF6900B84954 /* FirebaseContactManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseContactManager.swift; sourceTree = "<group>"; };
-		B54ED3352CA6AF9500B84954 /* ContactProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactProtocol.swift; sourceTree = "<group>"; };
+		B54ED3352CA6AF9500B84954 /* ContactManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactManagerProtocol.swift; sourceTree = "<group>"; };
 		B54ED3372CA6B6EE00B84954 /* ContactRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRequestView.swift; sourceTree = "<group>"; };
 		B5754AD32C8E25FF0010B5F5 /* GlobetrotterChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlobetrotterChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobetrotterChatApp.swift; sourceTree = "<group>"; };
@@ -156,9 +156,9 @@
 		B5754AE72C8E29AB0010B5F5 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
-				B53E95A02C9C6E7F003D89B1 /* ProfileProtocol.swift */,
+				B53E95A02C9C6E7F003D89B1 /* ProfileManagerProtocol.swift */,
 				B54ED3202C9C8E9D00B84954 /* FirebaseProfileManager.swift */,
-				B54ED3352CA6AF9500B84954 /* ContactProtocol.swift */,
+				B54ED3352CA6AF9500B84954 /* ContactManagerProtocol.swift */,
 				B54ED3332CA6AF6900B84954 /* FirebaseContactManager.swift */,
 			);
 			path = Manager;
@@ -278,10 +278,10 @@
 				B583C47D2C945F3300D1E004 /* ContactViewModel.swift in Sources */,
 				B54ED3212C9C8EAA00B84954 /* FirebaseProfileManager.swift in Sources */,
 				B583C4A52C98393C00D1E004 /* AuthManager.swift in Sources */,
-				B53E95A12C9C6E8A003D89B1 /* ProfileProtocol.swift in Sources */,
+				B53E95A12C9C6E8A003D89B1 /* ProfileManagerProtocol.swift in Sources */,
 				B54ED3342CA6AF6900B84954 /* FirebaseContactManager.swift in Sources */,
 				B54ED3322CA301B400B84954 /* ContactRequest.swift in Sources */,
-				B54ED3362CA6AF9900B84954 /* ContactProtocol.swift in Sources */,
+				B54ED3362CA6AF9900B84954 /* ContactManagerProtocol.swift in Sources */,
 				B53E959F2C9C6206003D89B1 /* Contact.swift in Sources */,
 				B583C47F2C945F4400D1E004 /* ChatsViewModel.swift in Sources */,
 				B583C49F2C957CA500D1E004 /* ContentView.swift in Sources */,
