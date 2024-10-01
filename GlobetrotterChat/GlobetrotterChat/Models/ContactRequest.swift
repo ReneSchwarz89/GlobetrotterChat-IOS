@@ -12,6 +12,10 @@ struct ContactRequest: Codable {
     var to: String
     var status: RequestStatus = .pending
     
+    var id: String {
+           return "\(from)_\(to)"
+       }
+    
     func toDictionary() -> [String: Any] {
         return [
             "from": from,

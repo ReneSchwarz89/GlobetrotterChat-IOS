@@ -9,7 +9,7 @@ import Observation
 
 @Observable class ProfileViewModel {
     
-    var contactID: String = ""
+    var contactID: String = AuthServiceManager.shared.userID ?? ""
     var nickname: String = ""
     var nativeLanguage: String = ""
     var profileImage: String?
@@ -27,10 +27,10 @@ import Observation
             do {
                 try await manager.loadContact()
                 
-                    self.contact = self.manager.contact
-                    self.contactID = AuthServiceManager.shared.userID ?? ""
-                    self.nickname = self.contact?.nickname ?? ""
-                    self.nativeLanguage = self.contact?.nativeLanguage ?? ""
+                self.contact = self.manager.contact
+                self.contactID = self.contactID
+                self.nickname = self.contact?.nickname ?? ""
+                self.nativeLanguage = self.contact?.nativeLanguage ?? ""
                 
             } catch {
                 print("Error loading profile: \(error)")
@@ -41,7 +41,7 @@ import Observation
     func saveProfile() {
         Task {
             do {
-                let contact = Contact(contactID: AuthServiceManager.shared.userID ?? "",nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
+                let contact = Contact(contactID: contactID ,nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
                 try await manager.saveContact(contact)
                 self.contact = contact
             } catch {

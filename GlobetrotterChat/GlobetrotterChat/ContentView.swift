@@ -27,11 +27,11 @@ struct ContentView: View {
                     .tabItem { Label("Chats", systemImage: "message") }
                     .tag(Tab.chats)
                 
-                ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager()))
+                ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager(uid: authServiceManager.userID ?? "")))
                     .tabItem { Label("Contacts", systemImage: "person.2") }
                     .tag(Tab.contacts)
                 
-                ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: "\(AuthServiceManager.shared.user?.uid ?? "")")))
+                ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: authServiceManager.userID ?? "")))
                     .tabItem { Label("Profile", systemImage: "person") }
                     .tag(Tab.profile)
             }

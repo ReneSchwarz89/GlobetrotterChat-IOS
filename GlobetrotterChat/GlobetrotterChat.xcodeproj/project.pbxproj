@@ -13,7 +13,6 @@
 		B54ED3322CA301B400B84954 /* ContactRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3312CA301B400B84954 /* ContactRequest.swift */; };
 		B54ED3342CA6AF6900B84954 /* FirebaseContactManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3332CA6AF6900B84954 /* FirebaseContactManager.swift */; };
 		B54ED3362CA6AF9900B84954 /* ContactManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3352CA6AF9500B84954 /* ContactManagerProtocol.swift */; };
-		B54ED3382CA6B6EE00B84954 /* ContactRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3372CA6B6EE00B84954 /* ContactRequestView.swift */; };
 		B5754AD72C8E25FF0010B5F5 /* GlobetrotterChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */; };
 		B5754AD92C8E25FF0010B5F5 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD82C8E25FF0010B5F5 /* AuthenticationView.swift */; };
 		B5754ADB2C8E26000010B5F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5754ADA2C8E26000010B5F5 /* Assets.xcassets */; };
@@ -45,7 +44,6 @@
 		B54ED3312CA301B400B84954 /* ContactRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRequest.swift; sourceTree = "<group>"; };
 		B54ED3332CA6AF6900B84954 /* FirebaseContactManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseContactManager.swift; sourceTree = "<group>"; };
 		B54ED3352CA6AF9500B84954 /* ContactManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactManagerProtocol.swift; sourceTree = "<group>"; };
-		B54ED3372CA6B6EE00B84954 /* ContactRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRequestView.swift; sourceTree = "<group>"; };
 		B5754AD32C8E25FF0010B5F5 /* GlobetrotterChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlobetrotterChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobetrotterChatApp.swift; sourceTree = "<group>"; };
 		B5754AD82C8E25FF0010B5F5 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
@@ -137,7 +135,6 @@
 			children = (
 				B5754AFD2C8E44220010B5F5 /* ProfileView.swift */,
 				B583C4732C9453A200D1E004 /* ContactView.swift */,
-				B54ED3372CA6B6EE00B84954 /* ContactRequestView.swift */,
 				B583C4772C94576700D1E004 /* ChatsView.swift */,
 			);
 			path = Views;
@@ -286,7 +283,6 @@
 				B583C47F2C945F4400D1E004 /* ChatsViewModel.swift in Sources */,
 				B583C49F2C957CA500D1E004 /* ContentView.swift in Sources */,
 				B583C4782C94576700D1E004 /* ChatsView.swift in Sources */,
-				B54ED3382CA6B6EE00B84954 /* ContactRequestView.swift in Sources */,
 				B5754AEB2C8E36870010B5F5 /* AuthServiceManager.swift in Sources */,
 				B583C4742C9453A200D1E004 /* ContactView.swift in Sources */,
 				B583C4722C9445DF00D1E004 /* AuthViewModel.swift in Sources */,

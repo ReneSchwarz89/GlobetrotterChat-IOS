@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ContactView: View {
     @State var viewModel: ContactViewModel
-    @State private var isSheetPresented = false
+    @State var isSheetPresented = false
+    
     
     var body: some View {
         NavigationStack {
@@ -40,6 +41,13 @@ struct ContactView: View {
                                 .font(.subheadline)
                         }
                     }
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            viewModel.blockContact(contactID: contact.contactID)
+                        } label: {
+                            Label("Block", systemImage: "hand.raised.fill")
+                        }
+                    }
                 }
                 
                 // Plus-Button oben rechts
@@ -60,7 +68,7 @@ struct ContactView: View {
             }
             .sheet(isPresented: $isSheetPresented) {
                 VStack {
-                    TextField("Enter Token", text: $viewModel.token)
+                    TextField("Enter Token", text: $viewModel.sendToken)
                         .padding()
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
@@ -81,30 +89,60 @@ struct ContactView: View {
                     }
                 )
             }
-            .alert(isPresented: .constant(viewModel.pendingRequests.count > 0)) {
-                Alert(
-                    title: Text("New Contact Request"),
-                    message: Text("Do you want to accept the request from \(viewModel.pendingRequests.first?.from ?? "Unknown")?"),
-                    primaryButton: .default(Text("Accept")) {
-                        if let request = viewModel.pendingRequests.first {
-                            viewModel.updateRequestStatus(request: request, to: .allowed)
-                        }
-                    },
-                    secondaryButton: .cancel(Text("Decline")) {
-                        if let request = viewModel.pendingRequests.first {
-                            viewModel.updateRequestStatus(request: request, to: .blocked)
+            .sheet(isPresented: $viewModel.showSheet) {
+                VStack {
+                    Text("New Contact Requests")
+                        .font(.headline)
+                        .padding()
+                    
+                    List(viewModel.pendingRequests, id: \.id) { request in
+                        HStack {
+                            Text(request.from)
+                                .font(.headline)
+                            Spacer()
+                            Button(action: {
+                                viewModel.updateRequestStatus(request: request, to: .allowed)
+                            }) {
+                                Text("Accept")
+                                    .foregroundColor(.green)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                            Button(action: {
+                                viewModel.updateRequestStatus(request: request, to: .blocked)
+                            }) {
+                                Text("Decline")
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
                         }
                     }
-                )
+                }
+                .padding()
             }
             .onAppear {
-                // Überprüfen, ob es neue Anfragen gibt
-                if viewModel.pendingRequests.first != nil {
-                    // Logik zum Anzeigen der Anfrage
-                }
+                viewModel.setupListener()
             }
             .navigationTitle("Contacts")
         }
-        
     }
 }
+
+
+/*
+ .alert(isPresented: .constant( viewModel.pendingRequests.count > 0 )) {
+ Alert(
+ title: Text("New Contact Request"),
+ message: Text("Do you want to accept the request from \(viewModel.pendingRequests.first?.from ?? "Unknown")?"),
+ primaryButton: .default(Text("Accept")) {
+ if let request = viewModel.pendingRequests.first {
+ viewModel.updateRequestStatus(request: request, to: .allowed)
+ }
+ },
+ secondaryButton: .cancel(Text("Decline")) {
+ if let request = viewModel.pendingRequests.first {
+ viewModel.updateRequestStatus(request: request, to: .blocked)
+ }
+ }
+ )
+ }
+ */
