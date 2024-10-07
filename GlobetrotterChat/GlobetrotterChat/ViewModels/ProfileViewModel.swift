@@ -31,7 +31,7 @@ import Observation
                 self.contactID = self.contactID
                 self.nickname = self.contact?.nickname ?? ""
                 self.nativeLanguage = self.contact?.nativeLanguage ?? ""
-                
+                self.profileImage = self.contact?.profileImage ?? nil
             } catch {
                 print("Error loading profile: \(error)")
             }

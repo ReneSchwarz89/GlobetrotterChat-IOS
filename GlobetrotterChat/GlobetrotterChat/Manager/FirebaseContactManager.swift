@@ -8,13 +8,47 @@
 import SwiftUI
 import FirebaseFirestore
 
-class FirebaseContactManager: ContactManagerProtocol {
+@Observable class FirebaseContactManager: ContactManagerProtocol {
     
     private var db = Firestore.firestore()
     private let uid: String
+    private var pendingRequestsListener: ListenerRegistration?
+    private var acceptedContactsListener: ListenerRegistration?
     
     init(uid: String) {
         self.uid = uid
+    }
+    
+    func setPendingRequestsListener(completion: @escaping ([ContactRequest]) -> Void) {
+        pendingRequestsListener = db.collection("ContactRequests")
+            .whereField("to", isEqualTo: uid)
+            .whereField("status", isEqualTo: RequestStatus.pending.rawValue)
+            .addSnapshotListener { snapshot, error in
+                guard let documents = snapshot?.documents else { return }
+                let requests = documents.compactMap { try? $0.data(as: ContactRequest.self) }
+                completion(requests)
+            }
+    }
+    
+    func setAcceptedContactsListener(completion: @escaping ([Contact]) -> Void) {
+        acceptedContactsListener = db.collection("Contacts").document(uid).collection("AcceptedContacts")
+            .addSnapshotListener { snapshot, error in
+                guard let documents = snapshot?.documents else { return }
+                let contacts = documents.compactMap { try? $0.data(as: Contact.self) }
+                completion(contacts)
+            }
+    }
+    
+    func removeListeners() {
+        pendingRequestsListener?.remove()
+        acceptedContactsListener?.remove()
+    }
+    
+    
+    func sendContactRequest(to: String) async throws {
+        let requestID = "\(uid)_\(to)"
+        let request = ContactRequest(from: uid, to: to, status: .pending)
+        try await db.collection("ContactRequests").document(requestID).setData(request.toDictionary())
     }
     
     func updateRequestStatus(request: ContactRequest, to newStatus: RequestStatus) async throws {
@@ -50,7 +84,6 @@ class FirebaseContactManager: ContactManagerProtocol {
             break
         }
     }
-
     
     func addAcceptedContact(uid: String, contactID: String) async throws {
         let document = try await db.collection("Contacts").document(contactID).getDocument()
@@ -60,15 +93,9 @@ class FirebaseContactManager: ContactManagerProtocol {
     }
     
     func removeAcceptedContact(uid: String, contactID: String) async throws {
-            try await db.collection("Contacts").document(uid).collection("AcceptedContacts").document(contactID).delete()
-        }
-    
-    func sendContactRequest(to: String) async throws {
-        let requestID = "\(uid)_\(to)"
-        let request = ContactRequest(from: uid, to: to, status: .pending)
-        try await db.collection("ContactRequests").document(requestID).setData(request.toDictionary())
+        try await db.collection("Contacts").document(uid).collection("AcceptedContacts").document(contactID).delete()
     }
-
+    
     func blockContact(to: String) async throws {
         let requestID1 = "\(uid)_\(to)"
         let requestID2 = "\(to)_\(uid)"
@@ -97,5 +124,5 @@ class FirebaseContactManager: ContactManagerProtocol {
         
         // Lösche die Anfrage manuell
     }
-
+    
 }

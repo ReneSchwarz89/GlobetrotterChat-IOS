@@ -24,34 +24,20 @@ import FirebaseFirestore
     var errorMessage: String?
     private var manager: ContactManagerProtocol
     
-    private var listener: ListenerRegistration?
-    private var acceptedContactsListener: ListenerRegistration?
-    
     init(manager: ContactManagerProtocol) {
         self.manager = manager
-        setupListener()
-        setupAcceptedContactsListener()
+        setupListeners()
     }
     
-    func setupListener() {
-        listener = Firestore.firestore().collection("ContactRequests")
-            .whereField("to", isEqualTo: AuthServiceManager.shared.user?.uid ?? "")
-            .whereField("status", isEqualTo: RequestStatus.pending.rawValue)
-            .addSnapshotListener { snapshot, error in
-                guard let documents = snapshot?.documents else { return }
-                self.pendingRequests = documents.compactMap { try? $0.data(as: ContactRequest.self) }
-                self.newRequestCount = self.pendingRequests.count
-                self.showAlertForNewRequests()
-            }
-    }
-    
-    
-    private func setupAcceptedContactsListener() {
-        acceptedContactsListener = Firestore.firestore().collection("Contacts").document(AuthServiceManager.shared.user?.uid ?? "").collection("AcceptedContacts")
-            .addSnapshotListener { snapshot, error in
-                guard let documents = snapshot?.documents else { return }
-                self.acceptedContacts = documents.compactMap { try? $0.data(as: Contact.self) }
-            }
+    func setupListeners() {
+        manager.setPendingRequestsListener { [weak self] requests in
+            self?.pendingRequests = requests
+            self?.showAlertForNewRequests()
+        }
+        
+        manager.setAcceptedContactsListener { [weak self] contacts in
+            self?.acceptedContacts = contacts
+        }
     }
     
     func sendContactRequest() {
@@ -71,7 +57,7 @@ import FirebaseFirestore
             do {
                 try await manager.updateRequestStatus(request: request, to: newStatus)
                 print("Request status updated successfully")
-                setupListener()
+                setupListeners()
             } catch {
                 self.errorMessage = "Error updating request status: \(error.localizedDescription)"
                 print(self.errorMessage ?? "")
@@ -85,7 +71,7 @@ import FirebaseFirestore
                 try await manager.blockContact(to: contactID)
                 print("Contact blocked successfully")
                 // Listener neu starten, um die Liste der ausstehenden Anfragen zu aktualisieren
-                setupListener()
+                setupListeners()
             } catch {
                 self.errorMessage = "Error blocking contact: \(error.localizedDescription)"
                 print(self.errorMessage ?? "")
@@ -104,7 +90,6 @@ import FirebaseFirestore
     
     
     deinit {
-        listener?.remove()
-        acceptedContactsListener?.remove()
+        manager.removeListeners()
     }
 }

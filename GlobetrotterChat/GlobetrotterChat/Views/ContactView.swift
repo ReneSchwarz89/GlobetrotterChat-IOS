@@ -120,7 +120,7 @@ struct ContactView: View {
                 .padding()
             }
             .onAppear {
-                viewModel.setupListener()
+                viewModel.setupListeners()
             }
             .navigationTitle("Contacts")
         }

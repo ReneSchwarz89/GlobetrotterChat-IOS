@@ -6,10 +6,13 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 protocol ContactManagerProtocol {
-    func updateRequestStatus(request: ContactRequest, to newStatus: RequestStatus) async throws
-    func addAcceptedContact(uid: String, contactID: String) async throws 
     func sendContactRequest(to: String) async throws
+    func updateRequestStatus(request: ContactRequest, to newStatus: RequestStatus) async throws
     func blockContact(to: String) async throws
+    func setPendingRequestsListener(completion: @escaping ([ContactRequest]) -> Void)
+    func setAcceptedContactsListener(completion: @escaping ([Contact]) -> Void)
+    func removeListeners()
 }
