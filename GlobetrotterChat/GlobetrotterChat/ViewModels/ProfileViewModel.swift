@@ -13,7 +13,8 @@ import Observation
     var nickname: String = ""
     var nativeLanguage: String = ""
     var profileImage: String?
-    private var lastErrorMessage = ""
+    var profileImageData: Data?
+    var errorMessage: String?
     
     private var manager: ProfileManagerProtocol
     var contact: Contact?
@@ -26,12 +27,15 @@ import Observation
         Task {
             do {
                 try await manager.loadContact()
-                
                 self.contact = self.manager.contact
                 self.contactID = self.contactID
                 self.nickname = self.contact?.nickname ?? ""
                 self.nativeLanguage = self.contact?.nativeLanguage ?? ""
-                self.profileImage = self.contact?.profileImage ?? nil
+                self.profileImage = self.contact?.profileImage ?? ""
+                
+                if let profileImage = self.profileImage {
+                   downloadProfileImage(path: profileImage)
+                }
             } catch {
                 print("Error loading profile: \(error)")
             }
@@ -41,11 +45,41 @@ import Observation
     func saveProfile() {
         Task {
             do {
-                let contact = Contact(contactID: contactID ,nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
+                let contact = Contact(contactID: self.contactID ,nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
                 try await manager.saveContact(contact)
                 self.contact = contact
+                loadProfile()
             } catch {
                 print("Error saving profile: \(error)")
+            }
+        }
+    }
+    
+    //Image Workflow
+    
+    func uploadProfileImage(_ imageData: Data) {
+        Task {
+            do {
+                let path = "profile_images/\(UUID().uuidString).jpg"
+                let url = try await FirebaseStorageManager.shared.uploadImage(imageData, path: path)
+                self.profileImage = url.absoluteString
+                print("Image uploaded successfully: \(url)")
+                saveProfile()
+            } catch {
+                self.errorMessage = "Error uploading image: \(error.localizedDescription)"
+                print(self.errorMessage ?? "")
+            }
+        }
+    }
+    
+    func downloadProfileImage(path: String) {
+        Task {
+            do {
+                let imageData = try await FirebaseStorageManager.shared.downloadImage(path: path)
+                self.profileImageData = imageData
+            } catch {
+                self.errorMessage = "Error downloading image: \(error.localizedDescription)"
+                print(self.errorMessage ?? "")
             }
         }
     }
