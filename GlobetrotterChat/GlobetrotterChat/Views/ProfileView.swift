@@ -5,10 +5,6 @@
 //  Created by René Schwarz on 08.09.24.
 //
 
-import SwiftUI
-import Observation
-import FirebaseStorage
-import UIKit
 
 import SwiftUI
 import Observation
@@ -50,7 +46,7 @@ struct ProfileView: View {
                         }
                     }
                 }
-                .frame(width: 120, height: 120)
+                .frame(width: 180, height: 180)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Color.white, lineWidth: 4))
                 .shadow(radius: 10)

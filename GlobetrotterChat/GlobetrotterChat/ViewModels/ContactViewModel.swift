@@ -5,19 +5,19 @@
 //  Created by René Schwarz on 13.09.24.
 //
 
-import FirebaseFirestore
+import Foundation
+import Observation
 
 @Observable class ContactViewModel {
     var pendingRequests: [ContactRequest] = [] {
         didSet {
-            // Aktualisiere die Anzeige, wenn sich die Anzahl der neuen Anfragen ändert
             self.newRequestCount = self.pendingRequests.count
             self.showSheet = self.newRequestCount > 0
         }
     }
     var acceptedContacts: [Contact] = []
     var newRequestCount: Int = 0
-    
+
     var showSheet = false
     var alertMessage: String?
     var sendToken: String = ""
@@ -70,7 +70,6 @@ import FirebaseFirestore
             do {
                 try await manager.blockContact(to: contactID)
                 print("Contact blocked successfully")
-                // Listener neu starten, um die Liste der ausstehenden Anfragen zu aktualisieren
                 setupListeners()
             } catch {
                 self.errorMessage = "Error blocking contact: \(error.localizedDescription)"
@@ -79,17 +78,15 @@ import FirebaseFirestore
         }
     }
     
-    
     func showAlertForNewRequests() {
-        // Logik zum Anzeigen des Alerts für neue Anfragen
         if let request = pendingRequests.first(where: { $0.status == .pending }) {
             self.alertMessage = "Do you want to accept the request from \(request.from)?"
             self.showSheet = true
         }
     }
     
-    
     deinit {
         manager.removeListeners()
     }
 }
+

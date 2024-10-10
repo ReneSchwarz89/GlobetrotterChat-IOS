@@ -5,10 +5,12 @@
 //
 //  Created by René Schwarz on 26.09.24.
 //
-import SwiftUI
-import FirebaseFirestore
 
-@Observable class FirebaseContactManager: ContactManagerProtocol {
+import Foundation
+import FirebaseFirestore
+import Observation
+
+class FirebaseContactManager: ContactManagerProtocol {
     
     private var db = Firestore.firestore()
     private let uid: String
@@ -31,11 +33,26 @@ import FirebaseFirestore
     }
     
     func setAcceptedContactsListener(completion: @escaping ([Contact]) -> Void) {
-        acceptedContactsListener = db.collection("Contacts").document(uid).collection("AcceptedContacts")
+        acceptedContactsListener = db.collection("ContactRelations").document(uid)
             .addSnapshotListener { snapshot, error in
-                guard let documents = snapshot?.documents else { return }
-                let contacts = documents.compactMap { try? $0.data(as: Contact.self) }
-                completion(contacts)
+                guard let document = snapshot, let data = document.data(), let acceptedContactIDs = data["acceptedContactIDs"] as? [String] else { return }
+                
+                var contacts: [Contact] = []
+                let group = DispatchGroup()
+                
+                for contactID in acceptedContactIDs {
+                    group.enter()
+                    self.db.collection("Contacts").document(contactID).getDocument { document, error in
+                        if let document = document, let contact = try? document.data(as: Contact.self) {
+                            contacts.append(contact)
+                        }
+                        group.leave()
+                    }
+                }
+                
+                group.notify(queue: .main) {
+                    completion(contacts)
+                }
             }
     }
     
@@ -43,7 +60,6 @@ import FirebaseFirestore
         pendingRequestsListener?.remove()
         acceptedContactsListener?.remove()
     }
-    
     
     func sendContactRequest(to: String) async throws {
         let requestID = "\(uid)_\(to)"
@@ -55,12 +71,10 @@ import FirebaseFirestore
         let requestID1 = "\(request.from)_\(request.to)"
         let requestID2 = "\(request.to)_\(request.from)"
         
-        // Versuche, das Dokument mit der ersten ID zu finden
         var document = db.collection("ContactRequests").document(requestID1)
         var docSnapshot = try await document.getDocument()
         
         if !docSnapshot.exists {
-            // Falls das Dokument nicht existiert, versuche es mit der zweiten ID
             document = db.collection("ContactRequests").document(requestID2)
             docSnapshot = try await document.getDocument()
             
@@ -70,7 +84,6 @@ import FirebaseFirestore
             }
         }
         
-        // Aktualisiere den Status der Anfrage
         try await document.updateData(["status": newStatus.rawValue])
         
         switch newStatus {
@@ -86,26 +99,38 @@ import FirebaseFirestore
     }
     
     func addAcceptedContact(uid: String, contactID: String) async throws {
-        let document = try await db.collection("Contacts").document(contactID).getDocument()
-        if let contact = try document.data(as: Contact?.self) {
-            try await db.collection("Contacts").document(uid).collection("AcceptedContacts").document(contactID).setData(contact.toDictionary())
-        }
+        var acceptedContactIDs = try await getAcceptedContactIDs(uid: uid)
+        acceptedContactIDs.append(contactID)
+        try await saveAcceptedContactIDs(uid: uid, contactIDs: acceptedContactIDs)
     }
     
     func removeAcceptedContact(uid: String, contactID: String) async throws {
-        try await db.collection("Contacts").document(uid).collection("AcceptedContacts").document(contactID).delete()
+        var acceptedContactIDs = try await getAcceptedContactIDs(uid: uid)
+        acceptedContactIDs.removeAll { $0 == contactID }
+        try await saveAcceptedContactIDs(uid: uid, contactIDs: acceptedContactIDs)
+    }
+    
+    private func getAcceptedContactIDs(uid: String) async throws -> [String] {
+        let document = try await db.collection("ContactRelations").document(uid).getDocument()
+        let data = document.data()
+        return data?["acceptedContactIDs"] as? [String] ?? []
+    }
+    
+    private func saveAcceptedContactIDs(uid: String, contactIDs: [String]) async throws {
+        try await db.collection("ContactRelations").document(uid).setData(["acceptedContactIDs": contactIDs])
+    }
+    private func saveblockContactIDs(uid: String, contactIDs: [String]) async throws {
+        try await db.collection("ContactRelations").document(uid).setData(["blockedContactIDs": contactIDs])
     }
     
     func blockContact(to: String) async throws {
         let requestID1 = "\(uid)_\(to)"
         let requestID2 = "\(to)_\(uid)"
         
-        // Versuche, das Dokument mit der ersten ID zu finden
         var document = db.collection("ContactRequests").document(requestID1)
         var docSnapshot = try await document.getDocument()
         
         if !docSnapshot.exists {
-            // Falls das Dokument nicht existiert, versuche es mit der zweiten ID
             document = db.collection("ContactRequests").document(requestID2)
             docSnapshot = try await document.getDocument()
             
@@ -115,14 +140,13 @@ import FirebaseFirestore
             }
         }
         
-        // Aktualisiere den Status der Anfrage
         try await document.updateData(["status": RequestStatus.blocked.rawValue])
         
-        // Entferne den Kontakt aus den akzeptierten Kontakten
         try await removeAcceptedContact(uid: to, contactID: uid)
         try await removeAcceptedContact(uid: uid, contactID: to)
         
-        // Lösche die Anfrage manuell
+        try await saveblockContactIDs(uid: uid, contactIDs: [to])
     }
+    
     
 }

@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import Observation
 
 struct ContactView: View {
     @State var viewModel: ContactViewModel
     @State var isSheetPresented = false
-    
+    @State var isBlockedContactsSheetPresented = false
+    @State var isGlobalContactsSheetPresented = false
     
     var body: some View {
         NavigationStack {
@@ -63,6 +65,37 @@ struct ContactView: View {
                             .foregroundColor(.red)
                             .padding(5)
                             .background(Circle().fill(Color.red))
+                    }
+                })
+                
+                // Neue Buttons für Blocked Contacts und Global Contacts
+                .navigationBarItems(leading: HStack {
+                    Button(action: {
+                        isBlockedContactsSheetPresented = true
+                    }) {
+                        Text("Blocked Contacts")
+                    }
+                    .sheet(isPresented: $isBlockedContactsSheetPresented) {
+                        VStack {
+                            Text("Blocked Contacts")
+                                .font(.headline)
+                                .padding()
+                            Spacer()
+                        }
+                    }
+                    
+                    Button(action: {
+                        isGlobalContactsSheetPresented = true
+                    }) {
+                        Text("Global Contacts")
+                    }
+                    .sheet(isPresented: $isGlobalContactsSheetPresented) {
+                        VStack {
+                            Text("Global Contacts")
+                                .font(.headline)
+                                .padding()
+                            Spacer()
+                        }
                     }
                 })
             }
@@ -127,22 +160,6 @@ struct ContactView: View {
     }
 }
 
-
-/*
- .alert(isPresented: .constant( viewModel.pendingRequests.count > 0 )) {
- Alert(
- title: Text("New Contact Request"),
- message: Text("Do you want to accept the request from \(viewModel.pendingRequests.first?.from ?? "Unknown")?"),
- primaryButton: .default(Text("Accept")) {
- if let request = viewModel.pendingRequests.first {
- viewModel.updateRequestStatus(request: request, to: .allowed)
- }
- },
- secondaryButton: .cancel(Text("Decline")) {
- if let request = viewModel.pendingRequests.first {
- viewModel.updateRequestStatus(request: request, to: .blocked)
- }
- }
- )
- }
- */
+#Preview {
+    ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager(uid: AuthServiceManager.shared.user?.uid ?? "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
+}

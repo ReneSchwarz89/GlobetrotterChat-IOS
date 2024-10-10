@@ -12,4 +12,5 @@ protocol ProfileManagerProtocol {
     
     func loadContact() async throws
     func saveContact(_ contact: Contact) async throws
+    
 }
