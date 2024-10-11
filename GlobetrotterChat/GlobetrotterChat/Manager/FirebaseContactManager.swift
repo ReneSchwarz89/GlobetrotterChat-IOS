@@ -16,6 +16,7 @@ class FirebaseContactManager: ContactManagerProtocol {
     private let uid: String
     private var pendingRequestsListener: ListenerRegistration?
     private var acceptedContactsListener: ListenerRegistration?
+    private var blockedContactsListener: ListenerRegistration?
     
     init(uid: String) {
         self.uid = uid
@@ -32,26 +33,69 @@ class FirebaseContactManager: ContactManagerProtocol {
             }
     }
     
+    
     func setAcceptedContactsListener(completion: @escaping ([Contact]) -> Void) {
         acceptedContactsListener = db.collection("ContactRelations").document(uid)
             .addSnapshotListener { snapshot, error in
-                guard let document = snapshot, let data = document.data(), let acceptedContactIDs = data["acceptedContactIDs"] as? [String] else { return }
-                
-                var contacts: [Contact] = []
-                let group = DispatchGroup()
-                
-                for contactID in acceptedContactIDs {
-                    group.enter()
-                    self.db.collection("Contacts").document(contactID).getDocument { document, error in
-                        if let document = document, let contact = try? document.data(as: Contact.self) {
-                            contacts.append(contact)
-                        }
-                        group.leave()
-                    }
+                guard let document = snapshot, let _ = document.data() else {
+                    completion([])
+                    return
                 }
                 
-                group.notify(queue: .main) {
-                    completion(contacts)
+                do {
+                    let contactRelations = try document.data(as: ContactRelations.self)
+                    var contacts: [Contact] = []
+                    let group = DispatchGroup()
+                    
+                    for contactID in contactRelations.acceptedContactIDs {
+                        group.enter()
+                        self.db.collection("Contacts").document(contactID).getDocument { document, error in
+                            if let document = document, let contact = try? document.data(as: Contact.self) {
+                                contacts.append(contact)
+                            }
+                            group.leave()
+                        }
+                    }
+                    
+                    group.notify(queue: .main) {
+                        completion(contacts)
+                    }
+                } catch {
+                    print("Error decoding ContactRelations: \(error)")
+                    completion([])
+                }
+            }
+    }
+    
+    func setBlockedContactsListener(completion: @escaping ([Contact]) -> Void) {
+        blockedContactsListener = db.collection("ContactRelations").document(uid)
+            .addSnapshotListener { snapshot, error in
+                guard let document = snapshot, let _ = document.data() else {
+                    completion([])
+                    return
+                }
+                
+                do {
+                    let contactRelations = try document.data(as: ContactRelations.self)
+                    var contacts: [Contact] = []
+                    let group = DispatchGroup()
+                    
+                    for contactID in contactRelations.blockedContactIDs {
+                        group.enter()
+                        self.db.collection("Contacts").document(contactID).getDocument { document, error in
+                            if let document = document, let contact = try? document.data(as: Contact.self) {
+                                contacts.append(contact)
+                            }
+                            group.leave()
+                        }
+                    }
+                    
+                    group.notify(queue: .main) {
+                        completion(contacts)
+                    }
+                } catch {
+                    print("Error decoding ContactRelations: \(error)")
+                    completion([])
                 }
             }
     }
@@ -59,12 +103,19 @@ class FirebaseContactManager: ContactManagerProtocol {
     func removeListeners() {
         pendingRequestsListener?.remove()
         acceptedContactsListener?.remove()
+        blockedContactsListener?.remove()
     }
     
     func sendContactRequest(to: String) async throws {
         let requestID = "\(uid)_\(to)"
         let request = ContactRequest(from: uid, to: to, status: .pending)
         try await db.collection("ContactRequests").document(requestID).setData(request.toDictionary())
+    }
+    
+    func getAllRequests() async throws  -> [ContactRequest]{
+        let snapshot = try await db.collection("ContactRequests").getDocuments()
+        let requests = snapshot.documents.compactMap {try? $0.data(as: ContactRequest.self)}
+        return requests
     }
     
     func updateRequestStatus(request: ContactRequest, to newStatus: RequestStatus) async throws {
@@ -88,65 +139,55 @@ class FirebaseContactManager: ContactManagerProtocol {
         
         switch newStatus {
         case .allowed:
+           
             try await addAcceptedContact(uid: request.to, contactID: request.from)
             try await addAcceptedContact(uid: request.from, contactID: request.to)
+            try await removeBlockedContact(uid: request.to, contactID: request.from)
+            try await removeBlockedContact(uid: request.from, contactID: request.to)
         case .blocked:
             try await removeAcceptedContact(uid: request.to, contactID: request.from)
             try await removeAcceptedContact(uid: request.from, contactID: request.to)
+            try await addBlockedContact(uid: request.to, contactID: request.from)
+            try await addBlockedContact(uid: request.from, contactID: request.to)
         default:
             break
         }
     }
     
-    func addAcceptedContact(uid: String, contactID: String) async throws {
-        var acceptedContactIDs = try await getAcceptedContactIDs(uid: uid)
-        acceptedContactIDs.append(contactID)
-        try await saveAcceptedContactIDs(uid: uid, contactIDs: acceptedContactIDs)
+    private func addAcceptedContact(uid: String, contactID: String) async throws {
+        var contactRelations = try await getContactRelations(uid: uid)
+        contactRelations.acceptedContactIDs.append(contactID)
+        try await saveContactRelations(uid: uid, contactRelations: contactRelations)
     }
     
-    func removeAcceptedContact(uid: String, contactID: String) async throws {
-        var acceptedContactIDs = try await getAcceptedContactIDs(uid: uid)
-        acceptedContactIDs.removeAll { $0 == contactID }
-        try await saveAcceptedContactIDs(uid: uid, contactIDs: acceptedContactIDs)
+    private func removeAcceptedContact(uid: String, contactID: String) async throws {
+        var contactRelations = try await getContactRelations(uid: uid)
+        contactRelations.acceptedContactIDs.removeAll { $0 == contactID }
+        try await saveContactRelations(uid: uid, contactRelations: contactRelations)
     }
     
-    private func getAcceptedContactIDs(uid: String) async throws -> [String] {
+    private func addBlockedContact(uid: String, contactID: String) async throws {
+        var contactRelations = try await getContactRelations(uid: uid)
+        contactRelations.blockedContactIDs.append(contactID)
+        try await saveContactRelations(uid: uid, contactRelations: contactRelations)
+    }
+    private func removeBlockedContact(uid: String, contactID: String) async throws {
+        var contactRelations = try await getContactRelations(uid: uid)
+        contactRelations.blockedContactIDs.removeAll { $0 == contactID }
+        try await saveContactRelations(uid: uid, contactRelations: contactRelations)
+    }
+    
+    func getContactRelations(uid: String) async throws -> ContactRelations {
         let document = try await db.collection("ContactRelations").document(uid).getDocument()
-        let data = document.data()
-        return data?["acceptedContactIDs"] as? [String] ?? []
-    }
-    
-    private func saveAcceptedContactIDs(uid: String, contactIDs: [String]) async throws {
-        try await db.collection("ContactRelations").document(uid).setData(["acceptedContactIDs": contactIDs])
-    }
-    private func saveblockContactIDs(uid: String, contactIDs: [String]) async throws {
-        try await db.collection("ContactRelations").document(uid).setData(["blockedContactIDs": contactIDs])
-    }
-    
-    func blockContact(to: String) async throws {
-        let requestID1 = "\(uid)_\(to)"
-        let requestID2 = "\(to)_\(uid)"
-        
-        var document = db.collection("ContactRequests").document(requestID1)
-        var docSnapshot = try await document.getDocument()
-        
-        if !docSnapshot.exists {
-            document = db.collection("ContactRequests").document(requestID2)
-            docSnapshot = try await document.getDocument()
-            
-            if !docSnapshot.exists {
-                print("Request not found")
-                return
-            }
+        if let contactRelations = try? document.data(as: ContactRelations.self) {
+            return contactRelations
+        } else {
+            return ContactRelations()
         }
-        
-        try await document.updateData(["status": RequestStatus.blocked.rawValue])
-        
-        try await removeAcceptedContact(uid: to, contactID: uid)
-        try await removeAcceptedContact(uid: uid, contactID: to)
-        
-        try await saveblockContactIDs(uid: uid, contactIDs: [to])
     }
     
-    
+    func saveContactRelations(uid: String, contactRelations: ContactRelations) async throws {
+        try await db.collection("ContactRelations").document(uid).setData(contactRelations.toDictionary())
+    }
 }
+

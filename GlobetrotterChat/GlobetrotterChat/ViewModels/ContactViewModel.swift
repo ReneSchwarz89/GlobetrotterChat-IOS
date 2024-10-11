@@ -12,13 +12,14 @@ import Observation
     var pendingRequests: [ContactRequest] = [] {
         didSet {
             self.newRequestCount = self.pendingRequests.count
-            self.showSheet = self.newRequestCount > 0
+            self.showPendingRequestSheet = self.newRequestCount > 0
         }
     }
     var acceptedContacts: [Contact] = []
+    var blockedContacts: [Contact] = []
     var newRequestCount: Int = 0
 
-    var showSheet = false
+    var showPendingRequestSheet = false
     var alertMessage: String?
     var sendToken: String = ""
     var errorMessage: String?
@@ -38,6 +39,9 @@ import Observation
         manager.setAcceptedContactsListener { [weak self] contacts in
             self?.acceptedContacts = contacts
         }
+        manager.setBlockedContactsListener { [weak self] contacts in
+            self?.blockedContacts = contacts
+        }
     }
     
     func sendContactRequest() {
@@ -56,7 +60,7 @@ import Observation
         Task {
             do {
                 try await manager.updateRequestStatus(request: request, to: newStatus)
-                print("Request status updated successfully")
+                print("Request status updated successfully to \(newStatus.rawValue) for request \(request.id)")
                 setupListeners()
             } catch {
                 self.errorMessage = "Error updating request status: \(error.localizedDescription)"
@@ -65,23 +69,10 @@ import Observation
         }
     }
     
-    func blockContact(contactID: String) {
-        Task {
-            do {
-                try await manager.blockContact(to: contactID)
-                print("Contact blocked successfully")
-                setupListeners()
-            } catch {
-                self.errorMessage = "Error blocking contact: \(error.localizedDescription)"
-                print(self.errorMessage ?? "")
-            }
-        }
-    }
-    
     func showAlertForNewRequests() {
         if let request = pendingRequests.first(where: { $0.status == .pending }) {
             self.alertMessage = "Do you want to accept the request from \(request.from)?"
-            self.showSheet = true
+            self.showPendingRequestSheet = true
         }
     }
     

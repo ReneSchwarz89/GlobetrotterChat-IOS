@@ -10,7 +10,7 @@ import Observation
 
 struct ContactView: View {
     @State var viewModel: ContactViewModel
-    @State var isSheetPresented = false
+    @State var isSendRequestSheetPresented = false
     @State var isBlockedContactsSheetPresented = false
     @State var isGlobalContactsSheetPresented = false
     
@@ -45,7 +45,13 @@ struct ContactView: View {
                     }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
-                            viewModel.blockContact(contactID: contact.contactID)
+                            if let request = viewModel.pendingRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
+                                        viewModel.updateRequestStatus(request: request, to: .blocked)
+                                    } else {
+                                        // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Blockieren
+                                        let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .blocked)
+                                        viewModel.updateRequestStatus(request: newRequest, to: .blocked)
+                                    }
                         } label: {
                             Label("Block", systemImage: "hand.raised.fill")
                         }
@@ -55,7 +61,7 @@ struct ContactView: View {
                 // Plus-Button oben rechts
                 .navigationBarItems(trailing: HStack {
                     Button(action: {
-                        isSheetPresented = true
+                        isSendRequestSheetPresented = true
                     }) {
                         Image(systemName: "plus")
                     }
@@ -81,6 +87,46 @@ struct ContactView: View {
                                 .font(.headline)
                                 .padding()
                             Spacer()
+                            List(viewModel.blockedContacts, id: \.contactID) { contact in
+                                HStack {
+                                    if let profileImage = contact.profileImage, !profileImage.isEmpty {
+                                        // Lade das Profilbild
+                                        AsyncImage(url: URL(string: profileImage)) { image in
+                                            image.resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 50, height: 50)
+                                                .clipShape(Circle())
+                                        } placeholder: {
+                                            Circle()
+                                                .fill(Color.gray)
+                                                .frame(width: 50, height: 50)
+                                        }
+                                    } else {
+                                        Circle()
+                                            .fill(Color.gray)
+                                            .frame(width: 50, height: 50)
+                                    }
+                                    VStack(alignment: .leading) {
+                                        Text(contact.nickname)
+                                            .font(.headline)
+                                        Text(contact.nativeLanguage)
+                                            .font(.subheadline)
+                                    }
+                                }
+                                .swipeActions(edge: .trailing) {
+                                    Button(role: .destructive) {
+                                        if let request = viewModel.pendingRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
+                                            viewModel.updateRequestStatus(request: request, to: .allowed)
+                                                } else {
+                                                    // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Blockieren
+                                                    let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .blocked)
+                                                    viewModel.updateRequestStatus(request: newRequest, to: .allowed)
+                                                }
+                                    } label: {
+                                        Label("Unblock", systemImage: "hand.raised.fill")
+                                    }
+                                }
+                            }
                         }
                     }
                     
@@ -99,7 +145,7 @@ struct ContactView: View {
                     }
                 })
             }
-            .sheet(isPresented: $isSheetPresented) {
+            .sheet(isPresented: $isSendRequestSheetPresented) {
                 VStack {
                     TextField("Enter Token", text: $viewModel.sendToken)
                         .padding()
@@ -107,7 +153,7 @@ struct ContactView: View {
                     
                     Button("Send Request") {
                         viewModel.sendContactRequest()
-                        isSheetPresented = false
+                        isSendRequestSheetPresented = false
                     }
                     .padding()
                 }
@@ -122,7 +168,7 @@ struct ContactView: View {
                     }
                 )
             }
-            .sheet(isPresented: $viewModel.showSheet) {
+            .sheet(isPresented: $viewModel.showPendingRequestSheet) {
                 VStack {
                     Text("New Contact Requests")
                         .font(.headline)
