@@ -45,13 +45,13 @@ struct ContactView: View {
                     }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
-                            if let request = viewModel.pendingRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
-                                        viewModel.updateRequestStatus(request: request, to: .blocked)
-                                    } else {
-                                        // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Blockieren
-                                        let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .blocked)
-                                        viewModel.updateRequestStatus(request: newRequest, to: .blocked)
-                                    }
+                            if let request = viewModel.allExistRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
+                                viewModel.updateRequestStatus(request: request, to: .blocked)
+                            } else {
+                                // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Blockieren
+                                let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .blocked)
+                                viewModel.updateRequestStatus(request: newRequest, to: .blocked)
+                            }
                         } label: {
                             Label("Block", systemImage: "hand.raised.fill")
                         }
@@ -115,13 +115,13 @@ struct ContactView: View {
                                 }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
-                                        if let request = viewModel.pendingRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
+                                        if let request = viewModel.allExistRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
                                             viewModel.updateRequestStatus(request: request, to: .allowed)
-                                                } else {
-                                                    // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Blockieren
-                                                    let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .blocked)
-                                                    viewModel.updateRequestStatus(request: newRequest, to: .allowed)
-                                                }
+                                        } else {
+                                            // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Entblocken
+                                            let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .allowed)
+                                            viewModel.updateRequestStatus(request: newRequest, to: .allowed)
+                                        }
                                     } label: {
                                         Label("Unblock", systemImage: "hand.raised.fill")
                                     }

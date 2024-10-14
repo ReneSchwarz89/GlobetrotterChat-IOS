@@ -14,7 +14,7 @@ protocol ContactManagerProtocol {
     
     func sendContactRequest(to: String) async throws
     func updateRequestStatus(request: ContactRequest, to newStatus: RequestStatus) async throws
-
+    func getAllRequests() async throws  -> [ContactRequest]
     func removeListeners()
     
     

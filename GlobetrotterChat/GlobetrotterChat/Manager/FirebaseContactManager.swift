@@ -112,7 +112,7 @@ class FirebaseContactManager: ContactManagerProtocol {
         try await db.collection("ContactRequests").document(requestID).setData(request.toDictionary())
     }
     
-    func getAllRequests() async throws  -> [ContactRequest]{
+    func getAllRequests() async throws  -> [ContactRequest] {
         let snapshot = try await db.collection("ContactRequests").getDocuments()
         let requests = snapshot.documents.compactMap {try? $0.data(as: ContactRequest.self)}
         return requests
@@ -136,10 +136,10 @@ class FirebaseContactManager: ContactManagerProtocol {
         }
         
         try await document.updateData(["status": newStatus.rawValue])
+        print("Updated request status to \(newStatus.rawValue) for request \(request.id)")
         
         switch newStatus {
         case .allowed:
-           
             try await addAcceptedContact(uid: request.to, contactID: request.from)
             try await addAcceptedContact(uid: request.from, contactID: request.to)
             try await removeBlockedContact(uid: request.to, contactID: request.from)
@@ -147,35 +147,45 @@ class FirebaseContactManager: ContactManagerProtocol {
         case .blocked:
             try await removeAcceptedContact(uid: request.to, contactID: request.from)
             try await removeAcceptedContact(uid: request.from, contactID: request.to)
-            try await addBlockedContact(uid: request.to, contactID: request.from)
-            try await addBlockedContact(uid: request.from, contactID: request.to)
+            try await addBlockedContact(contactID: request.from == self.uid ? request.to : request.from)
         default:
             break
         }
     }
     
-    private func addAcceptedContact(uid: String, contactID: String) async throws {
+    func addAcceptedContact(uid: String, contactID: String) async throws {
         var contactRelations = try await getContactRelations(uid: uid)
-        contactRelations.acceptedContactIDs.append(contactID)
+        if !contactRelations.acceptedContactIDs.contains(contactID) {
+            contactRelations.acceptedContactIDs.append(contactID)
+        }
         try await saveContactRelations(uid: uid, contactRelations: contactRelations)
+        print("Added \(contactID) to accepted contacts for \(uid)")
     }
     
-    private func removeAcceptedContact(uid: String, contactID: String) async throws {
+    func removeAcceptedContact(uid: String, contactID: String) async throws {
         var contactRelations = try await getContactRelations(uid: uid)
         contactRelations.acceptedContactIDs.removeAll { $0 == contactID }
         try await saveContactRelations(uid: uid, contactRelations: contactRelations)
+        print("Removed \(contactID) from accepted contacts for \(uid)")
     }
     
-    private func addBlockedContact(uid: String, contactID: String) async throws {
+    func addBlockedContact(contactID: String) async throws {
+        let uid = self.uid // Verwende die uid des eingeloggten Nutzers
         var contactRelations = try await getContactRelations(uid: uid)
-        contactRelations.blockedContactIDs.append(contactID)
+        if !contactRelations.blockedContactIDs.contains(contactID) {
+            contactRelations.blockedContactIDs.append(contactID)
+        }
         try await saveContactRelations(uid: uid, contactRelations: contactRelations)
+        print("Added \(contactID) to blocked contacts for \(uid)")
     }
-    private func removeBlockedContact(uid: String, contactID: String) async throws {
+    
+    func removeBlockedContact(uid: String, contactID: String) async throws {
         var contactRelations = try await getContactRelations(uid: uid)
         contactRelations.blockedContactIDs.removeAll { $0 == contactID }
         try await saveContactRelations(uid: uid, contactRelations: contactRelations)
+        print("Removed \(contactID) from blocked contacts for \(uid)")
     }
+    
     
     func getContactRelations(uid: String) async throws -> ContactRelations {
         let document = try await db.collection("ContactRelations").document(uid).getDocument()
