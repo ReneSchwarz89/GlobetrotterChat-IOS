@@ -33,69 +33,58 @@ class FirebaseContactManager: ContactManagerProtocol {
             }
     }
     
-    
     func setAcceptedContactsListener(completion: @escaping ([Contact]) -> Void) {
-        acceptedContactsListener = db.collection("ContactRelations").document(uid)
+        acceptedContactsListener = db.collection("Contacts").document(uid).collection("ContactRelations")
+            .document("relations")
             .addSnapshotListener { snapshot, error in
-                guard let document = snapshot, let _ = document.data() else {
+                guard let document = snapshot, let contactRelations = try? document.data(as: ContactRelations.self) else {
                     completion([])
                     return
                 }
                 
-                do {
-                    let contactRelations = try document.data(as: ContactRelations.self)
-                    var contacts: [Contact] = []
-                    let group = DispatchGroup()
-                    
-                    for contactID in contactRelations.acceptedContactIDs {
-                        group.enter()
-                        self.db.collection("Contacts").document(contactID).getDocument { document, error in
-                            if let document = document, let contact = try? document.data(as: Contact.self) {
-                                contacts.append(contact)
-                            }
-                            group.leave()
+                var contacts: [Contact] = []
+                let group = DispatchGroup()
+                
+                for contactID in contactRelations.acceptedContactIDs {
+                    group.enter()
+                    self.db.collection("Contacts").document(contactID).getDocument { document, error in
+                        if let document = document, let contact = try? document.data(as: Contact.self) {
+                            contacts.append(contact)
                         }
+                        group.leave()
                     }
-                    
-                    group.notify(queue: .main) {
-                        completion(contacts)
-                    }
-                } catch {
-                    print("Error decoding ContactRelations: \(error)")
-                    completion([])
+                }
+                
+                group.notify(queue: .main) {
+                    completion(contacts)
                 }
             }
     }
     
     func setBlockedContactsListener(completion: @escaping ([Contact]) -> Void) {
-        blockedContactsListener = db.collection("ContactRelations").document(uid)
+        blockedContactsListener = db.collection("Contacts").document(uid).collection("ContactRelations")
+            .document("relations")
             .addSnapshotListener { snapshot, error in
-                guard let document = snapshot, let _ = document.data() else {
+                guard let document = snapshot, let contactRelations = try? document.data(as: ContactRelations.self) else {
                     completion([])
                     return
                 }
                 
-                do {
-                    let contactRelations = try document.data(as: ContactRelations.self)
-                    var contacts: [Contact] = []
-                    let group = DispatchGroup()
-                    
-                    for contactID in contactRelations.blockedContactIDs {
-                        group.enter()
-                        self.db.collection("Contacts").document(contactID).getDocument { document, error in
-                            if let document = document, let contact = try? document.data(as: Contact.self) {
-                                contacts.append(contact)
-                            }
-                            group.leave()
+                var contacts: [Contact] = []
+                let group = DispatchGroup()
+                
+                for contactID in contactRelations.blockedContactIDs {
+                    group.enter()
+                    self.db.collection("Contacts").document(contactID).getDocument { document, error in
+                        if let document = document, let contact = try? document.data(as: Contact.self) {
+                            contacts.append(contact)
                         }
+                        group.leave()
                     }
-                    
-                    group.notify(queue: .main) {
-                        completion(contacts)
-                    }
-                } catch {
-                    print("Error decoding ContactRelations: \(error)")
-                    completion([])
+                }
+                
+                group.notify(queue: .main) {
+                    completion(contacts)
                 }
             }
     }
@@ -112,9 +101,9 @@ class FirebaseContactManager: ContactManagerProtocol {
         try await db.collection("ContactRequests").document(requestID).setData(request.toDictionary())
     }
     
-    func getAllRequests() async throws  -> [ContactRequest] {
+    func getAllRequests() async throws -> [ContactRequest] {
         let snapshot = try await db.collection("ContactRequests").getDocuments()
-        let requests = snapshot.documents.compactMap {try? $0.data(as: ContactRequest.self)}
+        let requests = snapshot.documents.compactMap { try? $0.data(as: ContactRequest.self) }
         return requests
     }
     
@@ -186,9 +175,8 @@ class FirebaseContactManager: ContactManagerProtocol {
         print("Removed \(contactID) from blocked contacts for \(uid)")
     }
     
-    
     func getContactRelations(uid: String) async throws -> ContactRelations {
-        let document = try await db.collection("ContactRelations").document(uid).getDocument()
+        let document = try await db.collection("Contacts").document(uid).collection("ContactRelations").document("relations").getDocument()
         if let contactRelations = try? document.data(as: ContactRelations.self) {
             return contactRelations
         } else {
@@ -197,7 +185,6 @@ class FirebaseContactManager: ContactManagerProtocol {
     }
     
     func saveContactRelations(uid: String, contactRelations: ContactRelations) async throws {
-        try await db.collection("ContactRelations").document(uid).setData(contactRelations.toDictionary())
+        try await db.collection("Contacts").document(uid).collection("ContactRelations").document("relations").setData(contactRelations.toDictionary())
     }
 }
-
