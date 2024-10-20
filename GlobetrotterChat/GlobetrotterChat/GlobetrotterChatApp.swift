@@ -19,6 +19,7 @@ struct GlobetrotterChatApp: App {
     var body: some Scene {
             WindowGroup {
                 ContentView()
+                    .accentColor(Color("ArcticBlue"))
             }
         }
 }

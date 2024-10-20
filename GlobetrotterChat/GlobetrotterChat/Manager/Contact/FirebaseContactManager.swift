@@ -101,12 +101,6 @@ class FirebaseContactManager: ContactManagerProtocol {
         try await db.collection("ContactRequests").document(requestID).setData(request.toDictionary())
     }
     
-    func getAllRequests() async throws -> [ContactRequest] {
-        let snapshot = try await db.collection("ContactRequests").getDocuments()
-        let requests = snapshot.documents.compactMap { try? $0.data(as: ContactRequest.self) }
-        return requests
-    }
-    
     func updateRequestStatus(request: ContactRequest, to newStatus: RequestStatus) async throws {
         let requestID1 = "\(request.from)_\(request.to)"
         let requestID2 = "\(request.to)_\(request.from)"

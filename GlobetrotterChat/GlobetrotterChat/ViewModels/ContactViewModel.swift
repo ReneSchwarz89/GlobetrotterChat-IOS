@@ -15,7 +15,6 @@ import Observation
             self.showPendingRequestSheet = self.newRequestCount > 0
         }
     }
-    var allExistRequests: [ContactRequest] = []
     var acceptedContacts: [Contact] = []
     var blockedContacts: [Contact] = []
     var newRequestCount: Int = 0
@@ -29,22 +28,11 @@ import Observation
     init(manager: ContactManagerProtocol) {
         self.manager = manager
         setupListeners()
-        getallExistRequests()
-    }
-    
-    func getallExistRequests() {
-        Task {
-            do {
-                self.allExistRequests = try await manager.getAllRequests()
-            } catch {
-                print("Error fetching all exist requests: \(error.localizedDescription)")
-            }
-        }
     }
     
     func setupListeners() {
         manager.setPendingRequestsListener { [weak self] requests in
-            self?.pendingRequests = requests
+            self?.pendingRequests = requests.filter { $0.status == .pending}
             self?.showAlertForNewRequests()
         }
         
@@ -92,4 +80,3 @@ import Observation
         manager.removeListeners()
     }
 }
-

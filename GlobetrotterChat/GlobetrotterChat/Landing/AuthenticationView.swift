@@ -14,7 +14,7 @@ struct AuthenticationView: View {
     @State private var hasPressedSignIn = false
     @State private var lastErrorMessage = ""
     @State private var isPresentingError = false
-    @Bindable var viewModel = AuthViewModel()
+    @State var viewModel = AuthViewModel()
     
     var body: some View {
         NavigationStack() {

@@ -7,6 +7,7 @@
 import Foundation
 
 struct Contact: Codable {
+    
     var contactID: String
     var nickname: String
     var nativeLanguage: String

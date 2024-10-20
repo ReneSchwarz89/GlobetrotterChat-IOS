@@ -5,6 +5,7 @@
 //  Created by René Schwarz on 13.09.24.
 //
 
+import Foundation
 import SwiftUI
 import Observation
 
@@ -45,7 +46,7 @@ struct ContactView: View {
                     }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
-                            if let request = viewModel.allExistRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
+                            if let request = viewModel.pendingRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
                                 viewModel.updateRequestStatus(request: request, to: .blocked)
                             } else {
                                 // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Blockieren
@@ -115,7 +116,7 @@ struct ContactView: View {
                                 }
                                 .swipeActions(edge: .trailing) {
                                     Button(role: .destructive) {
-                                        if let request = viewModel.allExistRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
+                                        if let request = viewModel.pendingRequests.first(where: { $0.to == contact.contactID || $0.from == contact.contactID }) {
                                             viewModel.updateRequestStatus(request: request, to: .allowed)
                                         } else {
                                             // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Entblocken
@@ -207,5 +208,5 @@ struct ContactView: View {
 }
 
 #Preview {
-    ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager(uid: AuthServiceManager.shared.user?.uid ?? "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
+    ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager(uid: AuthServiceManager.shared.userID ?? "")))
 }
