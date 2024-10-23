@@ -10,12 +10,12 @@ import Observation
 
 struct AddChatGroupSheet: View {
     @Bindable var viewModel: ChatGroupsViewModel
-    @State private var groupName: String = ""
-    @State private var groupPictureURL: String = ""
     @State private var selectedImage: UIImage?
-    @State private var isUploading = false
     @State private var isImagePickerPresented = false
-    
+    @State private var isCreateButtonEnabled = false
+    @State private var isSearchEnabled = false
+    @State private var searchQuery: String = ""
+
     var body: some View {
         NavigationStack {
             Form {
@@ -39,19 +39,27 @@ struct AddChatGroupSheet: View {
                                         isImagePickerPresented = true
                                     }
                             }
-                            
-                            TextField("Group Name", text: $groupName)
+                            TextField("Group Name", text: $viewModel.groupName)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.leading, 10)
+                                .onChange(of: viewModel.groupName) { oldValue, newValue in
+                                    updateCreateButtonState()
+                                }
                         }
                     }
                 }
-                
                 Section(header: Text("Select Contacts")) {
-                    List(viewModel.possibleContacts, id: \.contactID) { contact in
+                    if isSearchEnabled {
+                        TextField("Search Contacts", text: $searchQuery)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
+                    }
+                    
+                    List(viewModel.possibleContacts.filter { contact in
+                        searchQuery.isEmpty ? true : contact.nickname.lowercased().contains(searchQuery.lowercased())
+                    }, id: \.contactID) { contact in
                         HStack {
                             if let profileImage = contact.profileImage, !profileImage.isEmpty {
-                                // Lade das Profilbild
                                 AsyncImage(url: URL(string: profileImage)) { image in
                                     image.resizable()
                                         .aspectRatio(contentMode: .fill)
@@ -82,33 +90,64 @@ struct AddChatGroupSheet: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             viewModel.toggleContactSelection(contactID: contact.contactID)
+                            updateCreateButtonState()
                         }
                     }
                 }
-                
             }
             .navigationTitle("New Chat Group")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
+                        viewModel.resetSelections()
                         viewModel.isAddChatGroupSheetPresented = false
                     }
                     .tint(Color("ArcticBlue"))
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Create") {
-                        let isGroup = viewModel.selectedContacts.count > 1
-                        viewModel.createChatGroup(participants: Array(viewModel.selectedContacts), isGroup: isGroup, groupName: groupName, groupPictureURL: groupPictureURL)
-                        viewModel.isAddChatGroupSheetPresented = false
+                    HStack {
+                        Button(action: {
+                            isSearchEnabled.toggle()
+                        }) {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(Color("ArcticBlue").opacity(isSearchEnabled ? 1.0 : 0.3))
+                        }
+                        Button("Create") {
+                            if let image = selectedImage {
+                                viewModel.uploadGroupImage(image.jpegData(compressionQuality: 0.8)!)
+                            }
+                            viewModel.createChatGroup()
+                            viewModel.resetSelections()
+                            viewModel.isAddChatGroupSheetPresented = false
+                        }
+                        .tint(Color("ArcticBlue"))
+                        .disabled(!isCreateButtonEnabled)
                     }
-                    .tint(Color("ArcticBlue"))
                 }
             }
-            .sheet(isPresented: $isImagePickerPresented) {
+            .sheet(isPresented: $isImagePickerPresented, onDismiss: uploadImage) {
                 ImagePicker(image: $selectedImage)
             }
         }
         .tint(Color("ArcticBlue"))
+    }
+
+    func uploadImage() {
+        guard let selectedImage = selectedImage else { return }
+        if let imageData = selectedImage.jpegData(compressionQuality: 0.8) {
+            viewModel.uploadGroupImage(imageData)
+        }
+        updateCreateButtonState()
+    }
+
+    func updateCreateButtonState() {
+        if viewModel.selectedContacts.count == 1 {
+            isCreateButtonEnabled = true
+        } else if viewModel.selectedContacts.count > 1 && selectedImage != nil && !viewModel.groupName.isEmpty {
+            isCreateButtonEnabled = true
+        } else {
+            isCreateButtonEnabled = false
+        }
     }
 }
 

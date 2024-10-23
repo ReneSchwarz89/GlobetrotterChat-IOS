@@ -11,15 +11,15 @@ import FirebaseFirestore
 struct ChatGroup: Identifiable, Codable {
     @DocumentID var id: String?
     var participants: [String]
-    var isGroup: Bool //
+    var isGroup: Bool
     var admin: String?
-    var latestMessage: Message? // Neueste Nachricht
+    var latestMessage: Message? 
     @ServerTimestamp var createdAt: Timestamp?
     var isActive: Bool
     var groupName: String?
     var groupPictureURL: String?
     
-    init(participants: [String], isGroup: Bool, admin: String? = nil, latestMessage: Message? = nil, isActive: Bool = true, groupName: String? = nil, groupPictureURL: String? = nil) {
+    init(participants: [String], isGroup: Bool, admin: String? = nil, latestMessage: Message? = nil, isActive: Bool = true, groupName: String? , groupPictureURL: String?) {
         self.participants = participants
         self.isGroup = isGroup
         self.admin = admin

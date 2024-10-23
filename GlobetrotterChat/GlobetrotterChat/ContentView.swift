@@ -23,7 +23,7 @@ struct ContentView: View {
             AuthenticationView()
         } else {
             TabView(selection: $selectedTab) {
-                ChatGroupsView(viewModel: ChatGroupsViewModel(manager: FirebaseChatGroupsManager(uid: authServiceManager.userID ?? "")))
+                ChatGroupsView(viewModel: ChatGroupsViewModel(manager: FirebaseChatGroupsManager(uid: AuthServiceManager.shared.userID ?? "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
                     .tabItem { Label("Chats", systemImage: "message") }
                     .tag(Tab.chats)
                 

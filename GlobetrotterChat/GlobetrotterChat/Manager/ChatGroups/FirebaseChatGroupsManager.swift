@@ -9,11 +9,12 @@ import Foundation
 import FirebaseFirestore
 
 @Observable class FirebaseChatGroupsManager: ChatGroupsManagerProtocol {
-    static var shared: FirebaseChatGroupsManager = FirebaseChatGroupsManager()
+    static var shared = FirebaseChatGroupsManager()
     
     private var db = Firestore.firestore()
     private let uid: String
     private var possibleContactsListener: ListenerRegistration?
+    private var chatGroupsListener: ListenerRegistration?
     
     init(uid: String = AuthServiceManager.shared.userID ?? "") {
         self.uid = uid
@@ -47,11 +48,28 @@ import FirebaseFirestore
             }
     }
     
-    func removeListeners() {
-        possibleContactsListener?.remove()
+    func setChatGroupsListener(completion: @escaping ([ChatGroup]) -> Void) { // Neu
+        chatGroupsListener = db.collection("ChatGroups")
+            .whereField("participants", arrayContains: uid)
+            .addSnapshotListener { snapshot, error in
+                guard let documents = snapshot?.documents else {
+                    completion([])
+                    return
+                }
+                
+                let chatGroups: [ChatGroup] = documents.compactMap { document in
+                    try? document.data(as: ChatGroup.self)
+                }
+                completion(chatGroups)
+            }
     }
     
-    func createChatGroup(_ chatGroup: ChatGroup) async throws {
+    func removeListeners() {
+        possibleContactsListener?.remove()
+        chatGroupsListener?.remove()
+    }
+    
+    func createChatGroup(chatGroup: ChatGroup) async throws {
         try db.collection("ChatGroups").addDocument(from: chatGroup)
     }
     
@@ -61,10 +79,8 @@ import FirebaseFirestore
 
 
 /*
- static let shared = FirebaseChatGroupsManager()
  
- private var db = Firestore.firestore()
- private let uid: String
+ 
  private var chatGroupsListener: ListenerRegistration?
  private var contactsListener: ListenerRegistration?
      
