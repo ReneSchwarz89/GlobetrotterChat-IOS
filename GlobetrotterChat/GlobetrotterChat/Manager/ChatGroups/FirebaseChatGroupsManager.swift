@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import Observation
 
 @Observable class FirebaseChatGroupsManager: ChatGroupsManagerProtocol {
     static var shared = FirebaseChatGroupsManager()
@@ -48,65 +49,94 @@ import FirebaseFirestore
             }
     }
     
-    func setChatGroupsListener(completion: @escaping ([ChatGroup]) -> Void) { // Neu
+    // Setzt den Listener für Chat-Gruppen
+    func setChatGroupsListener(completion: @escaping ([ChatGroup]) -> Void) {
         chatGroupsListener = db.collection("ChatGroups")
             .whereField("participants", arrayContains: uid)
+            .whereField("isActive", isEqualTo: true)
             .addSnapshotListener { snapshot, error in
                 guard let documents = snapshot?.documents else {
                     completion([])
                     return
                 }
-                
                 let chatGroups: [ChatGroup] = documents.compactMap { document in
                     try? document.data(as: ChatGroup.self)
                 }
                 completion(chatGroups)
             }
     }
+
     
+    // Entfernt die Listener
     func removeListeners() {
         possibleContactsListener?.remove()
         chatGroupsListener?.remove()
     }
     
-    func createChatGroup(chatGroup: ChatGroup) async throws {
-        try db.collection("ChatGroups").addDocument(from: chatGroup)
+    // Erstellt eine neue Chat-Gruppe
+    func createChatGroup(chatGroup: ChatGroup) async throws -> Bool {
+        let groupID: String
+        if chatGroup.isGroup {
+            groupID = UUID().uuidString // Generate a new UUID for the group chat
+            var updatedChatGroup = chatGroup
+            updatedChatGroup.id = groupID // Set the same ID in the ChatGroup model
+            try db.collection("ChatGroups").document(groupID).setData(from: updatedChatGroup)
+        } else {
+            let participants = chatGroup.participants.sorted()
+            groupID = "\(participants[0])_\(participants[1])"
+            // Check if a single chat already exists
+            let existingChatGroup = try await db.collection("ChatGroups")
+                .whereField("id", isEqualTo: groupID)
+                .getDocuments()
+            if existingChatGroup.documents.isEmpty {
+                var updatedChatGroup = chatGroup
+                updatedChatGroup.id = groupID // Set the same ID in the ChatGroup model
+                try db.collection("ChatGroups").document(groupID).setData(from: updatedChatGroup)
+                return true // New group created
+            } else {
+                // Group already exists, update without createdAt
+                let chatGroupRef = db.collection("ChatGroups").document(groupID)
+                let data = try await chatGroupRef.getDocument()
+                if let existingChatGroup = try? data.data(as: ChatGroup.self) {
+                    var updatedChatGroup = existingChatGroup
+                    updatedChatGroup.createdAt = existingChatGroup.createdAt // Retain the original timestamp
+                    try chatGroupRef.setData(from: updatedChatGroup, merge: true)
+                    return false // Group already exists
+                } else {
+                    throw NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve existing chat group."])
+                }
+            }
+        }
+        return false
     }
-    
+    func updateChatGroupActivity(for currentUserID: String, contactID: String, isActive: Bool) async throws {
+            let chatGroupsRef = db.collection("ChatGroups").whereField("participants", arrayContainsAny: [currentUserID, contactID])
+            let snapshot = try await chatGroupsRef.getDocuments()
+            for document in snapshot.documents {
+                let chatGroupID = document.documentID
+                let chatGroupRef = db.collection("ChatGroups").document(chatGroupID)
+                let chatGroup = try document.data(as: ChatGroup.self)
+                if chatGroup.participants.contains(contactID) && chatGroup.participants.contains(currentUserID) && !chatGroup.isGroup {
+                    try await chatGroupRef.updateData(["isActive": isActive])
+                }
+            }
+        }
+    func doesChatGroupExist(otherContactID: String) async throws -> Bool {
+        let participants = [self.uid, otherContactID].sorted()
+        let chatGroupID = "\(participants[0])_\(participants[1])"
+
+        let existingChatGroup = try await db.collection("ChatGroups")
+            .whereField("id", isEqualTo: chatGroupID)
+            .getDocuments()
+
+        return !existingChatGroup.documents.isEmpty
+    }
+
+    func addChatGroupReferences(for contactIDs: [String], chatGroupID: String) {
+            contactIDs.forEach { contactID in
+                let contactRef = db.collection("contacts").document(contactID).collection("contactRelations").document("chatgroups")
+                contactRef.updateData(["chatGroupIDs": FieldValue.arrayUnion([chatGroupID])])
+            }
+        }
 }
 
-
-
-
-/*
- 
- 
- private var chatGroupsListener: ListenerRegistration?
- private var contactsListener: ListenerRegistration?
-     
- var acceptedContacts: [Contact] = []
- var chatGroups: [ChatGroup] = []
- 
- private init() {
-     self.uid = AuthServiceManager.shared.userID ?? ""// Beispiel für die UID des aktuellen Nutzers
-     loadChatGroups()
-     
- }
- 
- 
- 
- func addParticipant(chatGroupId: String, participantId: String) async throws {
-     let chatGroupRef = db.collection("ChatGroups").document(chatGroupId)
-     try await chatGroupRef.updateData([
-         "participants": FieldValue.arrayUnion([participantId])
-     ])
- }
- 
- func removeParticipant(chatGroupId: String, participantId: String) async throws {
-     let chatGroupRef = db.collection("ChatGroups").document(chatGroupId)
-     try await chatGroupRef.updateData([
-         "participants": FieldValue.arrayRemove([participantId])
-     ])
- }
- 
- */

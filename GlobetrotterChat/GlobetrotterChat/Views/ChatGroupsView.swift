@@ -9,43 +9,43 @@ import SwiftUI
 import Observation
 
 struct ChatGroupsView: View {
-    
     @State var viewModel = ChatGroupsViewModel()
-    
     
     var body: some View {
         NavigationStack {
             VStack {
-                List(viewModel.chatGroups) { chatGroup in // Neu
-                    HStack {
-                        if chatGroup.isGroup {
-                            AsyncImage(url: URL(string: chatGroup.groupPictureURL ?? "")) { image in
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 50, height: 50)
-                                    .clipShape(Circle())
-                            } placeholder: {
-                                Circle()
-                                    .fill(Color.gray)
-                                    .frame(width: 50, height: 50)
-                            }
-                            Text(chatGroup.groupName ?? "Group")
-                                .font(.headline)
-                        } else {
-                            if let contactID = chatGroup.participants.first(where: { $0 != AuthServiceManager.shared.user?.uid ?? "" }) {
-                                if let contact = viewModel.possibleContacts.first(where: { $0.contactID == contactID }) {
-                                    AsyncImage(url: URL(string: contact.profileImage ?? "")) { image in
-                                        image.resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 50, height: 50)
-                                            .clipShape(Circle())
-                                    } placeholder: {
-                                        Circle()
-                                            .fill(Color.gray)
-                                            .frame(width: 50, height: 50)
+                List(viewModel.chatGroups) { chatGroup in
+                    NavigationLink(destination: ChatView(chatGroup: chatGroup)) {
+                        HStack {
+                            if chatGroup.isGroup {
+                                AsyncImage(url: URL(string: chatGroup.groupPictureURL ?? "")) { image in
+                                    image.resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                } placeholder: {
+                                    Circle()
+                                        .fill(Color.gray)
+                                        .frame(width: 50, height: 50)
+                                }
+                                Text(chatGroup.groupName ?? "Group")
+                                    .font(.headline)
+                            } else {
+                                if let contactID = chatGroup.participants.first(where: { $0 != AuthServiceManager.shared.user?.uid ?? "" }) {
+                                    if let contact = viewModel.possibleContacts.first(where: { $0.contactID == contactID }) {
+                                        AsyncImage(url: URL(string: contact.profileImage ?? "")) { image in
+                                            image.resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 50, height: 50)
+                                                .clipShape(Circle())
+                                        } placeholder: {
+                                            Circle()
+                                                .fill(Color.gray)
+                                                .frame(width: 50, height: 50)
+                                        }
+                                        Text(contact.nickname)
+                                            .font(.headline)
                                     }
-                                    Text(contact.nickname)
-                                        .font(.headline)
                                 }
                             }
                         }
@@ -61,7 +61,6 @@ struct ChatGroupsView: View {
                         }) {
                             Image(systemName: "plus")
                         }
-                        
                     }
                 }
             }
@@ -71,6 +70,7 @@ struct ChatGroupsView: View {
         }
     }
 }
+
 
 #Preview {
     ChatGroupsView(viewModel: ChatGroupsViewModel(manager: FirebaseChatGroupsManager(uid: AuthServiceManager.shared.userID ?? "DYa1BIZI7HPeB5lLO6HfQy9dTsN2")))

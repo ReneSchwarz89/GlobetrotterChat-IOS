@@ -7,3 +7,8 @@
 
 import Foundation
 
+protocol MessagesManagerProtocol {
+    func sendMessage(_ message: Message) async throws
+    func setMessagesListener(chatGroupID: String, completion: @escaping ([Message]) -> Void)
+    func removeListeners()
+}

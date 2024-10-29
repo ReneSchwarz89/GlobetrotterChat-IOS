@@ -8,8 +8,8 @@
 import Foundation
 import FirebaseFirestore
 
-struct ChatGroup: Identifiable, Codable {
-    @DocumentID var id: String?
+struct ChatGroup: Identifiable ,Codable {
+    var id: String
     var participants: [String]
     var isGroup: Bool
     var admin: String?
@@ -19,7 +19,8 @@ struct ChatGroup: Identifiable, Codable {
     var groupName: String?
     var groupPictureURL: String?
     
-    init(participants: [String], isGroup: Bool, admin: String? = nil, latestMessage: Message? = nil, isActive: Bool = true, groupName: String? , groupPictureURL: String?) {
+    init(id: String, participants: [String], isGroup: Bool, admin: String? = nil, latestMessage: Message? = nil, isActive: Bool = true, groupName: String? , groupPictureURL: String?) {
+        self.id = id
         self.participants = participants
         self.isGroup = isGroup
         self.admin = admin
@@ -33,6 +34,7 @@ struct ChatGroup: Identifiable, Codable {
 extension ChatGroup {
     static var sample: Self {
         .init(
+            id: "group1",
             participants: ["user1", "user2"],
             isGroup: false,
             admin: "user1",
@@ -43,5 +45,3 @@ extension ChatGroup {
         )
     }
 }
-
-

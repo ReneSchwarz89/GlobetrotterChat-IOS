@@ -127,10 +127,14 @@ class FirebaseContactManager: ContactManagerProtocol {
             try await addAcceptedContact(uid: request.from, contactID: request.to)
             try await removeBlockedContact(uid: request.to, contactID: request.from)
             try await removeBlockedContact(uid: request.from, contactID: request.to)
+            
+            try await FirebaseChatGroupsManager.shared.updateChatGroupActivity(for: request.from, contactID: request.to, isActive: true)
         case .blocked:
             try await removeAcceptedContact(uid: request.to, contactID: request.from)
             try await removeAcceptedContact(uid: request.from, contactID: request.to)
             try await addBlockedContact(contactID: request.from == self.uid ? request.to : request.from)
+            
+            try await FirebaseChatGroupsManager.shared.updateChatGroupActivity(for: request.from, contactID: request.to, isActive: false)
         default:
             break
         }
@@ -151,6 +155,7 @@ class FirebaseContactManager: ContactManagerProtocol {
         try await saveContactRelations(uid: uid, contactRelations: contactRelations)
         print("Removed \(contactID) from accepted contacts for \(uid)")
     }
+    
     
     func addBlockedContact(contactID: String) async throws {
         let uid = self.uid // Verwende die uid des eingeloggten Nutzers

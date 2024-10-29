@@ -128,6 +128,10 @@ struct AddChatGroupSheet: View {
             .sheet(isPresented: $isImagePickerPresented, onDismiss: uploadImage) {
                 ImagePicker(image: $selectedImage)
             }
+            
+            .alert(isPresented: $viewModel.showAlert) {
+                        Alert(title: Text("Chat Group Exists"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("OK")))
+                    }
         }
         .tint(Color("ArcticBlue"))
     }
