@@ -35,7 +35,7 @@ struct ChatView: View {
                 Spacer()
             }
             .padding(.horizontal, 16)
-            
+
             ScrollView {
                 VStack {
                     ForEach(viewModel.messages) { message in
@@ -49,7 +49,7 @@ struct ChatView: View {
                                     .cornerRadius(10)
                                     .frame(maxWidth: 250, alignment: .trailing)
                             } else {
-                                Text(message.text)
+                                Text(message.translatedText)
                                     .padding()
                                     .background(Color.gray)
                                     .foregroundColor(.white)
@@ -63,7 +63,7 @@ struct ChatView: View {
                     }
                 }
             }
-            
+
             HStack {
                 TextField("Nachricht eingeben...", text: $viewModel.newMessageText)
                     .padding()
@@ -71,7 +71,9 @@ struct ChatView: View {
                     .cornerRadius(10)
 
                 Button(action: {
-                    viewModel.sendMessage(chatGroupID: chatGroup.id, senderId: AuthServiceManager.shared.user?.uid ?? "")
+                    
+                         viewModel.sendMessage(chatGroupID: chatGroup.id, senderId: AuthServiceManager.shared.user?.uid ?? "")
+                    
                 }) {
                     Text("Senden")
                         .padding()
