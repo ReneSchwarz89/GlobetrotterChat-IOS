@@ -44,8 +44,9 @@
 		B5A31A762CBD4BC600271258 /* MessagesManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A31A752CBD4BC600271258 /* MessagesManagerProtocol.swift */; };
 		B5A31A782CBD502400271258 /* FirebaseMessagesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A31A772CBD502400271258 /* FirebaseMessagesManager.swift */; };
 		B5A31A7C2CBE7D5400271258 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A31A7B2CBE7D5400271258 /* ChatView.swift */; };
-		B5A31A7E2CBE7D6C00271258 /* MessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A31A7D2CBE7D6C00271258 /* MessageViewModel.swift */; };
+		B5A31A7E2CBE7D6C00271258 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A31A7D2CBE7D6C00271258 /* ChatViewModel.swift */; };
 		B5A31A842CC2573300271258 /* AddChatGroupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A31A832CC2573200271258 /* AddChatGroupSheet.swift */; };
+		B5A31A862CD11FF900271258 /* DeepLTranslationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A31A852CD11FF900271258 /* DeepLTranslationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,8 +81,9 @@
 		B5A31A752CBD4BC600271258 /* MessagesManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesManagerProtocol.swift; sourceTree = "<group>"; };
 		B5A31A772CBD502400271258 /* FirebaseMessagesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseMessagesManager.swift; sourceTree = "<group>"; };
 		B5A31A7B2CBE7D5400271258 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
-		B5A31A7D2CBE7D6C00271258 /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
+		B5A31A7D2CBE7D6C00271258 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		B5A31A832CC2573200271258 /* AddChatGroupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChatGroupSheet.swift; sourceTree = "<group>"; };
+		B5A31A852CD11FF900271258 /* DeepLTranslationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLTranslationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,7 +175,7 @@
 				B5754AFF2C8E45240010B5F5 /* ProfileViewModel.swift */,
 				B583C47C2C945F3300D1E004 /* ContactViewModel.swift */,
 				B583C47E2C945F4400D1E004 /* ChatGroupsViewModel.swift */,
-				B5A31A7D2CBE7D6C00271258 /* MessageViewModel.swift */,
+				B5A31A7D2CBE7D6C00271258 /* ChatViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -186,6 +188,7 @@
 				B5A31A802CBE914B00271258 /* Contact */,
 				B5A31A812CBE916300271258 /* ChatGroups */,
 				B5A31A822CBE918600271258 /* Messages */,
+				B5A31A852CD11FF900271258 /* DeepLTranslationManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -344,7 +347,8 @@
 				B5A31A742CBD484000271258 /* FirebaseChatGroupsManager.swift in Sources */,
 				B54ED3212C9C8EAA00B84954 /* FirebaseProfileManager.swift in Sources */,
 				B583C4A52C98393C00D1E004 /* AuthManager.swift in Sources */,
-				B5A31A7E2CBE7D6C00271258 /* MessageViewModel.swift in Sources */,
+				B5A31A862CD11FF900271258 /* DeepLTranslationManager.swift in Sources */,
+				B5A31A7E2CBE7D6C00271258 /* ChatViewModel.swift in Sources */,
 				B53E95A12C9C6E8A003D89B1 /* ProfileManagerProtocol.swift in Sources */,
 				B5A31A842CC2573300271258 /* AddChatGroupSheet.swift in Sources */,
 				B54ED3342CA6AF6900B84954 /* FirebaseContactManager.swift in Sources */,

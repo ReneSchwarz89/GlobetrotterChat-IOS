@@ -9,9 +9,10 @@ import SwiftUI
 import Foundation
 import Observation
 
-@Observable class MessageViewModel {
+@Observable class ChatViewModel {
     var messages: [Message] = []
     var newMessageText: String = ""
+    var targetLang: String = ""
     private var manager: MessagesManagerProtocol
     
     init(manager: MessagesManagerProtocol = FirebaseMessagesManager(), chatGroupID: String) {
@@ -26,15 +27,30 @@ import Observation
     }
     
     func sendMessage(chatGroupID: String, senderId: String) {
-        let message = Message(chatGroupID: chatGroupID, senderId: senderId, text: newMessageText)
         Task {
             do {
+                
+                let translationResponse = try await translateText()
+                let translatedText = translationResponse.translations.first?.text ?? newMessageText
+                
+                
+                let message = Message(
+                    chatGroupID: chatGroupID,
+                    senderId: senderId,
+                    text: newMessageText,
+                    translatedText: translatedText
+                )
+                
                 try await manager.sendMessage(message)
-                newMessageText = "" // Eingabefeld leeren
+                newMessageText = ""
             } catch {
                 print("Failed to send message: \(error)")
             }
         }
+    }
+    
+    private func translateText() async throws -> TranslationResponse {
+        return try await DeepLTranslationManager.shared.translateText(text: newMessageText, targetLang: "EN")
     }
     
     deinit {

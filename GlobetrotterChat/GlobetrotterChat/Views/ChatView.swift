@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct ChatView: View {
-    @State var viewModel: MessageViewModel
+    @State var viewModel: ChatViewModel
     let chatGroup: ChatGroup
 
     init(chatGroup: ChatGroup) {
         self.chatGroup = chatGroup
-        _viewModel = State(wrappedValue: MessageViewModel(manager: FirebaseMessagesManager(), chatGroupID: chatGroup.id))
+        _viewModel = State(wrappedValue: ChatViewModel(manager: FirebaseMessagesManager(), chatGroupID: chatGroup.id))
     }
 
     var body: some View {

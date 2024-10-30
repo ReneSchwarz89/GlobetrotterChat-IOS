@@ -13,6 +13,7 @@ struct Message: Identifiable, Codable, Hashable {
     var chatGroupID: String
     var senderId: String
     var text: String
+    var translatedText: String = ""
     @ServerTimestamp var timestamp: Timestamp?
 
     func toDictionary() -> [String: Any] {
@@ -20,6 +21,7 @@ struct Message: Identifiable, Codable, Hashable {
             "chatGroupID": chatGroupID,
             "senderId": senderId,
             "text": text,
+            "translatedText": translatedText,
             "timestamp": timestamp ?? Timestamp()
         ]
     }
@@ -27,7 +29,8 @@ struct Message: Identifiable, Codable, Hashable {
     static let sample = Message(
         chatGroupID: "1",
         senderId: "user2",
-        text: "Hello"
+        text: "Hello",
+        translatedText: "Hallo"
     )
 }
 

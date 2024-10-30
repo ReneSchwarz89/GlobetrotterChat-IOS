@@ -56,6 +56,11 @@
             value = "disable"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "DEEPL_API_KEY"
+            value = "f603517f-4846-4c4e-adfe-85dc9d431c9c:fx"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
