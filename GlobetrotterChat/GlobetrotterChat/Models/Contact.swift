@@ -4,6 +4,7 @@
 //
 //  Created by René Schwarz on 19.09.24.
 //
+
 import Foundation
 
 struct Contact: Codable {

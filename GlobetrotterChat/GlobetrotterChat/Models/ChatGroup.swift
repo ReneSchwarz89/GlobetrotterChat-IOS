@@ -8,9 +8,9 @@
 import Foundation
 import FirebaseFirestore
 
-struct ChatGroup: Identifiable ,Codable {
+struct ChatGroup: Identifiable ,Codable , Hashable {
     var id: String
-    var participants: [String]
+    var participants: [Participant]
     var isGroup: Bool
     var admin: String?
     var latestMessage: Message? 
@@ -19,7 +19,7 @@ struct ChatGroup: Identifiable ,Codable {
     var groupName: String?
     var groupPictureURL: String?
     
-    init(id: String, participants: [String], isGroup: Bool, admin: String? = nil, latestMessage: Message? = nil, isActive: Bool = true, groupName: String? , groupPictureURL: String?) {
+    init(id: String, participants: [Participant], isGroup: Bool, admin: String? = nil, latestMessage: Message? = nil, isActive: Bool = true, groupName: String? , groupPictureURL: String?) {
         self.id = id
         self.participants = participants
         self.isGroup = isGroup
@@ -35,7 +35,7 @@ extension ChatGroup {
     static var sample: Self {
         .init(
             id: "group1",
-            participants: ["user1", "user2"],
+            participants: [Participant(id: "user1", targetLanguageCode: "en"), Participant(id: "user2", targetLanguageCode: "de")],
             isGroup: false,
             admin: "user1",
             latestMessage: Message.sample,
@@ -43,5 +43,14 @@ extension ChatGroup {
             groupName: "Study Group",
             groupPictureURL: "https://example.com/group.jpg"
         )
+    }
+}
+
+struct Participant: Identifiable, Codable, Hashable {
+    var id: String
+    var targetLanguageCode: String
+    
+    func toDictionary() -> [String: Any] {
+        ["id": id, "targetLanguageCode": targetLanguageCode]
     }
 }

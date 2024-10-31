@@ -87,14 +87,3 @@ struct ChatView: View {
     }
 }
 
-#Preview {
-    let sampleChatGroup = ChatGroup(
-        id: "sampleID",
-        participants: ["userID1", "userID2"],
-        isGroup: true,
-        admin: "userID1",
-        groupName: "Sample Group",
-        groupPictureURL: "https://example.com/sample.jpg"
-    )
-    ChatView(chatGroup: sampleChatGroup)
-}

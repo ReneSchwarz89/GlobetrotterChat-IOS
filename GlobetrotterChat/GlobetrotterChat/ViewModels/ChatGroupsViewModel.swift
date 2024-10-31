@@ -23,21 +23,26 @@ import UIKit
     var alertMessage = ""
     
     private var manager: ChatGroupsManagerProtocol
-
-    init(manager: ChatGroupsManagerProtocol = FirebaseChatGroupsManager()) {
+    private var currentUserID: String
+    
+    init(manager: ChatGroupsManagerProtocol = FirebaseChatGroupsManager(), currentUserID: String = AuthServiceManager.shared.userID ?? "") {
         self.manager = manager
+        self.currentUserID = currentUserID
         setupListeners()
     }
-
+    
     func setupListeners() {
         manager.setPossibleContactsListener { [weak self] possibleContacts in
             self?.possibleContacts = possibleContacts
+            print("Possible contacts updated: \(possibleContacts)") // Debug
         }
         manager.setChatGroupsListener { [weak self] chatGroups in
             self?.chatGroups = chatGroups
+            print("Chat groups updated: \(chatGroups)") // Debug
         }
     }
 
+    
     func toggleContactSelection(contactID: String) {
         if selectedContacts.contains(contactID) {
             selectedContacts.remove(contactID)
@@ -45,7 +50,7 @@ import UIKit
             selectedContacts.insert(contactID)
         }
     }
-
+    
     func uploadGroupImage(_ imageData: Data) {
         Task {
             do {
@@ -58,41 +63,47 @@ import UIKit
             }
         }
     }
-
+    
     func createChatGroup() {
-        let participants = Array(selectedContacts)
+        let participants = Array(Set(selectedContacts)).map { Participant(id: $0, targetLanguageCode: "en") }
         let isGroup = participants.count > 1
-        let adminID =  isGroup ? (AuthServiceManager.shared.user?.uid ?? "") : nil
+        let adminID = isGroup ? (AuthServiceManager.shared.user?.uid ?? "") : nil
         let chatGroupID: String
+        
         if isGroup {
-            chatGroupID = UUID().uuidString // New UUID for group chat
-        } else if let contactID1 = participants.first, let contactID2 = participants.last {
-            chatGroupID = [contactID1, contactID2].sorted().joined(separator: "_") // IDs sorted
+            chatGroupID = UUID().uuidString
+        } else if let contactID1 = participants.first?.id, let contactID2 = participants.last?.id {
+            let sortedIDs = [contactID1, contactID2].sorted()
+            chatGroupID = sortedIDs.joined(separator: "_")
         } else {
             return
         }
+        
         let newChatGroup = ChatGroup(
-            id: chatGroupID, // Use the same ID in the ChatGroup model
-            participants: [AuthServiceManager.shared.userID ?? ""] + participants,
+            id: chatGroupID,
+            participants: [Participant(id: AuthServiceManager.shared.userID ?? "", targetLanguageCode: "en")] + participants,
             isGroup: isGroup,
             admin: adminID,
             groupName: isGroup ? groupName : nil,
             groupPictureURL: isGroup ? groupPictureURL : nil
         )
-
+        
         Task {
             do {
                 let created = try await manager.createChatGroup(chatGroup: newChatGroup)
                 if created {
                     isAddChatGroupSheetPresented = false
                 } else {
-                    // Notify if the group already exists
+                    alertMessage = "Group already exists."
+                    showAlert = true
                 }
             } catch {
                 print("Error creating chat group: \(error)")
             }
         }
     }
+
+
     
     func resetSelections() {
         selectedContacts.removeAll()
@@ -100,8 +111,9 @@ import UIKit
         groupPictureURL = ""
         imageData = nil
     }
-
+    
     deinit {
         manager.removeListeners()
     }
 }
+

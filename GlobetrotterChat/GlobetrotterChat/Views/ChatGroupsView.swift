@@ -10,7 +10,7 @@ import Observation
 
 struct ChatGroupsView: View {
     @State var viewModel = ChatGroupsViewModel()
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -31,7 +31,7 @@ struct ChatGroupsView: View {
                                 Text(chatGroup.groupName ?? "Group")
                                     .font(.headline)
                             } else {
-                                if let contactID = chatGroup.participants.first(where: { $0 != AuthServiceManager.shared.user?.uid ?? "" }) {
+                                if let contactID = chatGroup.participants.first(where: { $0.id != AuthServiceManager.shared.user?.uid ?? "" })?.id {
                                     if let contact = viewModel.possibleContacts.first(where: { $0.contactID == contactID }) {
                                         AsyncImage(url: URL(string: contact.profileImage ?? "")) { image in
                                             image.resizable()
@@ -70,7 +70,6 @@ struct ChatGroupsView: View {
         }
     }
 }
-
 
 #Preview {
     ChatGroupsView(viewModel: ChatGroupsViewModel(manager: FirebaseChatGroupsManager(uid: AuthServiceManager.shared.userID ?? "DYa1BIZI7HPeB5lLO6HfQy9dTsN2")))
