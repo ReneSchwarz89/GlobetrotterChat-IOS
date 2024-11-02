@@ -9,17 +9,18 @@ import Observation
 
 @Observable class ProfileViewModel {
     
-    var contactID: String = AuthServiceManager.shared.userID ?? ""
     var nickname: String = ""
     var nativeLanguage: String = ""
     var profileImage: String?
     var profileImageData: Data?
     var errorMessage: String?
     
-    private var manager: ProfileManagerProtocol
     var contact: Contact?
+    var uid: String { return manager.uid }
     
-    init(manager: ProfileManagerProtocol) {
+    private var manager: ProfileManagerProtocol
+    
+    init(manager: ProfileManagerProtocol = FirebaseProfileManager()) {
         self.manager = manager
     }
     
@@ -28,7 +29,6 @@ import Observation
             do {
                 try await manager.loadContact()
                 self.contact = self.manager.contact
-                self.contactID = self.contactID
                 self.nickname = self.contact?.nickname ?? ""
                 self.nativeLanguage = self.contact?.nativeLanguage ?? ""
                 self.profileImage = self.contact?.profileImage ?? ""
@@ -45,7 +45,7 @@ import Observation
     func saveProfile() {
         Task {
             do {
-                let contact = Contact(contactID: self.contactID ,nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
+                let contact = Contact(contactID: self.uid, nickname: self.nickname, nativeLanguage: self.nativeLanguage, profileImage: self.profileImage)
                 try await manager.saveContact(contact)
                 self.contact = contact
                 loadProfile()

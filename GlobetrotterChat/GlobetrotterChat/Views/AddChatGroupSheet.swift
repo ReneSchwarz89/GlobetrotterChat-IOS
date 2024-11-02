@@ -15,7 +15,7 @@ struct AddChatGroupSheet: View {
     @State private var isCreateButtonEnabled = false
     @State private var isSearchEnabled = false
     @State private var searchQuery: String = ""
-
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -56,9 +56,9 @@ struct AddChatGroupSheet: View {
                     }
                     
                     List(viewModel.possibleContacts.filter { contact in
-                        contact.contactID != AuthServiceManager.shared.userID && (searchQuery.isEmpty ? true : contact.nickname.lowercased().contains(searchQuery.lowercased()))
+                        contact.contactID != viewModel.uid && (searchQuery.isEmpty ? true : contact.nickname.lowercased().contains(searchQuery.lowercased()))
                     }, id: \.contactID) { contact in
-
+                        
                         HStack {
                             if let profileImage = contact.profileImage, !profileImage.isEmpty {
                                 AsyncImage(url: URL(string: profileImage)) { image in
@@ -103,7 +103,6 @@ struct AddChatGroupSheet: View {
                         viewModel.resetSelections()
                         viewModel.isAddChatGroupSheetPresented = false
                     }
-                    .tint(Color("ArcticBlue"))
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
@@ -118,10 +117,7 @@ struct AddChatGroupSheet: View {
                                 viewModel.uploadGroupImage(image.jpegData(compressionQuality: 0.8)!)
                             }
                             viewModel.createChatGroup()
-                            viewModel.resetSelections()
-                            viewModel.isAddChatGroupSheetPresented = false
                         }
-                        .tint(Color("ArcticBlue"))
                         .disabled(!isCreateButtonEnabled)
                     }
                 }
@@ -131,12 +127,12 @@ struct AddChatGroupSheet: View {
             }
             
             .alert(isPresented: $viewModel.showAlert) {
-                        Alert(title: Text("Chat Group Exists"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("OK")))
-                    }
+                Alert(title: Text("Alert"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("OK")))
+            }
         }
         .tint(Color("ArcticBlue"))
     }
-
+    
     func uploadImage() {
         guard let selectedImage = selectedImage else { return }
         if let imageData = selectedImage.jpegData(compressionQuality: 0.8) {
@@ -144,7 +140,7 @@ struct AddChatGroupSheet: View {
         }
         updateCreateButtonState()
     }
-
+    
     func updateCreateButtonState() {
         if viewModel.selectedContacts.count == 1 {
             isCreateButtonEnabled = true
@@ -157,5 +153,5 @@ struct AddChatGroupSheet: View {
 }
 
 #Preview {
-    AddChatGroupSheet(viewModel: ChatGroupsViewModel(manager: FirebaseChatGroupsManager(uid: AuthServiceManager.shared.userID ?? "DYa1BIZI7HPeB5lLO6HfQy9dTsN2")))
+    AddChatGroupSheet(viewModel: ChatGroupsViewModel())
 }

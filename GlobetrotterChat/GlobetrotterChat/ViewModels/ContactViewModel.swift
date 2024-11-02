@@ -18,14 +18,15 @@ import Observation
     var acceptedContacts: [Contact] = []
     var blockedContacts: [Contact] = []
     var newRequestCount: Int = 0
-
     var showPendingRequestSheet = false
     var alertMessage: String?
     var sendToken: String = ""
     var errorMessage: String?
+    var uid: String { return manager.uid }
+    
     private var manager: ContactManagerProtocol
     
-    init(manager: ContactManagerProtocol) {
+    init(manager: ContactManagerProtocol = FirebaseContactManager()) {
         self.manager = manager
         setupListeners()
     }

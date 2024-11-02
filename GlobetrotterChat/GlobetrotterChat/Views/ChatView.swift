@@ -42,7 +42,7 @@ struct ChatView: View {
                 VStack {
                     ForEach(viewModel.messages) { message in
                         HStack {
-                            if message.senderId == AuthServiceManager.shared.user?.uid {
+                            if message.senderId == viewModel.uid {
                                 Spacer()
                                 Text(message.text)
                                     .padding()
@@ -52,8 +52,7 @@ struct ChatView: View {
                                     .frame(maxWidth: 250, alignment: .trailing)
                             } else {
                                 // Hole die `targetLanguageCode` des Empfängers
-                                let recipientID = AuthServiceManager.shared.user?.uid
-                                let targetLanguageCode = chatGroup.participants.first(where: { $0.id == recipientID })?.targetLanguageCode ?? "EN"
+                                let targetLanguageCode = chatGroup.participants.first(where: { $0.id == viewModel.uid })?.targetLanguageCode ?? "EN"
                                 Text(message.translations[targetLanguageCode] ?? message.text)
                                     .padding()
                                     .background(Color.arcticBlue.opacity(0.5))
@@ -63,7 +62,7 @@ struct ChatView: View {
                                 Spacer()
                             }
                         }
-                        .padding(message.senderId == AuthServiceManager.shared.user?.uid ? .leading : .trailing, 50)
+                        .padding(message.senderId == viewModel.uid ? .leading : .trailing, 50)
                         .padding(.vertical, 5)
                     }
                     .padding(.horizontal, 12)

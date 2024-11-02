@@ -13,6 +13,7 @@ import Observation
     var messages: [Message] = []
     var newMessageText: String = ""
     var targetLang: String = ""
+    var uid: String { return manager.uid }
     private var manager: MessagesManagerProtocol
     private var chatGroup: ChatGroup
     
@@ -33,9 +34,8 @@ import Observation
         Task {
             do {
                 // Hole alle Zielsprachen außer der eigenen
-                let userID = AuthServiceManager.shared.userID ?? ""
                 let targetLangs = chatGroup.participants
-                    .filter { $0.id != userID }
+                    .filter { $0.id != uid }
                     .map { $0.targetLanguageCode }
 
                 // Übersetze den Text in alle Zielsprachen
@@ -53,7 +53,7 @@ import Observation
                 let message = Message(
                     id: UUID().uuidString,
                     chatGroupID: chatGroup.id,
-                    senderId: userID,
+                    senderId: uid,
                     text: newMessageText,
                     translations: translationsDict
                 )

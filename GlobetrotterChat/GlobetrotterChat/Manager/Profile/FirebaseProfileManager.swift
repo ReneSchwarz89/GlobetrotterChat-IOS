@@ -11,15 +11,16 @@ import Observation
 
 class FirebaseProfileManager: ProfileManagerProtocol {
     
+    var uid: String
     var contact: Contact?
-    private let uid: String
+    private var db = Firestore.firestore()
     
-    init(uid: String) {
-        self.uid = uid
+    init() {
+        self.uid = AuthServiceManager.shared.userID ?? ""
     }
     
     func loadContact() async throws {
-        let document = try await Firestore.firestore().collection("Contacts").document(uid).getDocument()
+        let document = try await db.collection("Contacts").document(uid).getDocument()
         let contact = try document.data(as: Contact.self)
         self.contact = contact
     }
@@ -33,15 +34,17 @@ class FirebaseProfileManager: ProfileManagerProtocol {
     }
     
     private func createContact(_ contact: Contact) async throws {
-        try Firestore.firestore().collection("Contacts").document(uid).setData(from: contact)
+        try db.collection("Contacts").document(uid).setData(from: contact)
         try await loadContact()
     }
+    
     private func updateContact(_ contact: Contact) async throws {
-        try Firestore.firestore().collection("Contacts").document(uid).setData(from: contact, merge: true)
+        try db.collection("Contacts").document(uid).setData(from: contact, merge: true)
         try await loadContact()
     }
+    
     private func profileExists() async throws -> Bool {
-        let document = try await Firestore.firestore().collection("Contacts").document(uid).getDocument()
+        let document = try await db.collection("Contacts").document(uid).getDocument()
         return document.exists
     }
 }

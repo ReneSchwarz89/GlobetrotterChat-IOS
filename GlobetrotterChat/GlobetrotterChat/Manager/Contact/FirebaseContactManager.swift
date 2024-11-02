@@ -12,14 +12,15 @@ import Observation
 
 class FirebaseContactManager: ContactManagerProtocol {
     
+    var uid: String
+    
     private var db = Firestore.firestore()
-    private let uid: String
     private var pendingRequestsListener: ListenerRegistration?
     private var acceptedContactsListener: ListenerRegistration?
     private var blockedContactsListener: ListenerRegistration?
     
-    init(uid: String) {
-        self.uid = uid
+    init() {
+        self.uid = AuthServiceManager.shared.userID ?? ""
     }
     
     func setPendingRequestsListener(completion: @escaping ([ContactRequest]) -> Void) {
@@ -164,7 +165,7 @@ class FirebaseContactManager: ContactManagerProtocol {
             contactRelations.blockedContactIDs.append(contactID)
         }
         try await saveContactRelations(uid: uid, contactRelations: contactRelations)
-        print("Added \(contactID) to blocked contacts for \(uid)")
+        print("Added \(contactID) to blocked contacts for \(String(describing: uid))")
     }
     
     func removeBlockedContact(uid: String, contactID: String) async throws {

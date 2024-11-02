@@ -16,22 +16,22 @@ enum Tab: Int {
 
 struct ContentView: View {
     @State var selectedTab: Tab = UserDefaults.standard.selectedTab
-    private var authServiceManager = AuthServiceManager.shared
+    private let authServiceManager = AuthServiceManager.shared
     
     var body: some View {
         if authServiceManager.isUserSignedIn != true {
             AuthenticationView()
         } else {
             TabView(selection: $selectedTab) {
-                ChatGroupsView(viewModel: ChatGroupsViewModel(manager: FirebaseChatGroupsManager(uid: AuthServiceManager.shared.userID ?? "")))
+                ChatGroupsView(viewModel: ChatGroupsViewModel())
                     .tabItem { Label("Chats", systemImage: "message") }
                     .tag(Tab.chats)
                 
-                ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager(uid: authServiceManager.userID ?? "")))
+                ContactView(viewModel: ContactViewModel())
                     .tabItem { Label("Contacts", systemImage: "person.2") }
                     .tag(Tab.contacts)
                 
-                ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: authServiceManager.userID ?? "")))
+                ProfileView(viewModel: ProfileViewModel())
                     .tabItem { Label("Profile", systemImage: "person") }
                     .tag(Tab.profile)
             }
@@ -67,4 +67,5 @@ extension UserDefaults {
 
 #Preview {
     ContentView()
+        .accentColor(Color("ArcticBlue"))
 }

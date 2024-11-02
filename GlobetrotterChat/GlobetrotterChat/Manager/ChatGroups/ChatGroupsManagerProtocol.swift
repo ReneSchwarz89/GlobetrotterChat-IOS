@@ -8,6 +8,7 @@
 import Foundation
 
 protocol ChatGroupsManagerProtocol {
+    var uid: String { get }
     func setPossibleContactsListener(completion: @escaping ([Contact]) -> Void)
     func setChatGroupsListener(completion: @escaping ([ChatGroup]) -> Void)
     func removeListeners()

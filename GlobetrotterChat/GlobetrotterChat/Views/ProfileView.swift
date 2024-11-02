@@ -22,7 +22,6 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                
                 // Profilbild
                 Button(action: {
                     self.isImagePickerPresented = true
@@ -189,5 +188,5 @@ struct ImagePicker: UIViewControllerRepresentable {
 }
 
 #Preview {
-    ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
+    ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager()))
 }

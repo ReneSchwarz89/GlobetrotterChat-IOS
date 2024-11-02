@@ -13,12 +13,12 @@ import Observation
     static var shared = FirebaseChatGroupsManager()
     
     private var db = Firestore.firestore()
-    private let uid: String
+    var uid: String
     private var possibleContactsListener: ListenerRegistration?
     private var chatGroupsListener: ListenerRegistration?
     
-    init(uid: String = AuthServiceManager.shared.userID ?? "") {
-        self.uid = uid
+    init() {
+        self.uid = AuthServiceManager.shared.userID ?? ""
     }
     
     func setPossibleContactsListener(completion: @escaping ([Contact]) -> Void) {
@@ -59,7 +59,7 @@ import Observation
                 }
             }
     }
-
+    
     
     func setChatGroupsListener(completion: @escaping ([ChatGroup]) -> Void) {
         chatGroupsListener = db.collection("ChatGroups")
@@ -89,13 +89,16 @@ import Observation
     func createChatGroup(chatGroup: ChatGroup) async throws -> Bool {
         let groupID: String
         if chatGroup.isGroup {
-            groupID = UUID().uuidString // Generate a new UUID for the group chat
+            // Gruppenchats erstellen
+            groupID = UUID().uuidString
             var updatedChatGroup = chatGroup
-            updatedChatGroup.id = groupID // Set the same ID in the ChatGroup model
+            updatedChatGroup.id = groupID
             try db.collection("ChatGroups").document(groupID).setData(from: updatedChatGroup)
+            return true
         } else {
-            let participants = chatGroup.participants.sorted { $0.id < $1.id } // Sort participants by ID
-            groupID = "\(participants[0].id)_\(participants[1].id)" // Use sorted IDs to form the groupID
+            // Einzelchats erstellen
+            let participants = chatGroup.participants.sorted { $0.id < $1.id }
+            groupID = "\(participants[0].id)_\(participants[1].id)"
             
             // Check if a single chat already exists
             let existingChatGroup = try await db.collection("ChatGroups")
@@ -103,9 +106,10 @@ import Observation
                 .getDocuments()
             if existingChatGroup.documents.isEmpty {
                 var updatedChatGroup = chatGroup
-                updatedChatGroup.id = groupID // Set the same ID in the ChatGroup model
+                updatedChatGroup.id = groupID
                 try db.collection("ChatGroups").document(groupID).setData(from: updatedChatGroup)
-                return true // New group created
+                
+                return true
             } else {
                 // Group already exists, update without createdAt
                 let chatGroupRef = db.collection("ChatGroups").document(groupID)
@@ -114,14 +118,17 @@ import Observation
                     var updatedChatGroup = existingChatGroup
                     updatedChatGroup.createdAt = existingChatGroup.createdAt // Retain the original timestamp
                     try chatGroupRef.setData(from: updatedChatGroup, merge: true)
-                    return false // Group already exists
+                    
+                    return false
                 } else {
+                    
                     throw NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve existing chat group."])
                 }
             }
         }
-        return false
     }
+    
+    
     
     func updateChatGroupActivity(for currentUserID: String, contactID: String, isActive: Bool) async throws {
         let chatGroupsRef = db.collection("ChatGroups")

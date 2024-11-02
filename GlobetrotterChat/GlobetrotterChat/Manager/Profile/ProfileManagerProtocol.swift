@@ -8,9 +8,9 @@
 import Foundation
 
 protocol ProfileManagerProtocol {
+    var uid: String { get }
     var contact: Contact? { get set }
     
     func loadContact() async throws
     func saveContact(_ contact: Contact) async throws
-    
 }

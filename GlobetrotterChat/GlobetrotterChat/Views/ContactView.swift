@@ -50,7 +50,7 @@ struct ContactView: View {
                                 viewModel.updateRequestStatus(request: request, to: .blocked)
                             } else {
                                 // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Blockieren
-                                let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .blocked)
+                                let newRequest = ContactRequest(from: viewModel.uid, to: contact.contactID, status: .blocked)
                                 viewModel.updateRequestStatus(request: newRequest, to: .blocked)
                             }
                         } label: {
@@ -120,7 +120,7 @@ struct ContactView: View {
                                             viewModel.updateRequestStatus(request: request, to: .allowed)
                                         } else {
                                             // Falls keine Anfrage gefunden wird, erstelle eine neue Anfrage zum Entblocken
-                                            let newRequest = ContactRequest(from: AuthServiceManager.shared.userID ?? "", to: contact.contactID, status: .allowed)
+                                            let newRequest = ContactRequest(from: viewModel.uid, to: contact.contactID, status: .allowed)
                                             viewModel.updateRequestStatus(request: newRequest, to: .allowed)
                                         }
                                     } label: {
@@ -208,5 +208,5 @@ struct ContactView: View {
 }
 
 #Preview {
-    ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager(uid: AuthServiceManager.shared.userID ?? "")))
+    ContactView(viewModel: ContactViewModel(manager: FirebaseContactManager()))
 }

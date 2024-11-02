@@ -11,6 +11,12 @@ import FirebaseFirestore
 @Observable class FirebaseMessagesManager: MessagesManagerProtocol {
     private var db = Firestore.firestore()
     private var messagesListener: ListenerRegistration?
+    var uid: String
+    
+    init() {
+        self.uid = AuthServiceManager.shared.userID ?? ""
+    }
+    
     
     func sendMessage(_ message: Message) async throws {
         let chatGroupMessagesRef = db.collection("ChatGroups").document(message.chatGroupID).collection("Messages").document()

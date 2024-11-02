@@ -23,11 +23,10 @@ import UIKit
     var alertMessage = ""
     
     private var manager: ChatGroupsManagerProtocol
-    private var currentUserID: String
+    var uid: String { return manager.uid }
     
-    init(manager: ChatGroupsManagerProtocol = FirebaseChatGroupsManager(), currentUserID: String = AuthServiceManager.shared.userID ?? "") {
+    init(manager: ChatGroupsManagerProtocol = FirebaseChatGroupsManager()) {
         self.manager = manager
-        self.currentUserID = currentUserID
         setupListeners()
     }
     
@@ -41,7 +40,6 @@ import UIKit
             print("Chat groups updated: \(chatGroups)") // Debug
         }
     }
-
     
     func toggleContactSelection(contactID: String) {
         if selectedContacts.contains(contactID) {
@@ -57,23 +55,24 @@ import UIKit
                 let path = "chat-groups/\(UUID().uuidString)"
                 let url = try await FirebaseStorageManager.shared.uploadImage(imageData, path: path)
                 self.groupPictureURL = url.absoluteString
-                print("Image uploaded successfully: \(url)")
             } catch {
                 print("Error uploading image: \(error.localizedDescription)")
             }
         }
     }
     
+    func checkIfGroup() -> Bool {
+        return selectedContacts.count > 1
+    }
+    
     func createChatGroup() {
-        // Holen der `nativeLanguage` für jeden `selectedContact`
         let participants = Array(Set(selectedContacts)).map { contactID -> Participant in
-            // Finde den Kontakt im `possibleContacts`-Array, um die `nativeLanguage` zu bekommen
             let contact = possibleContacts.first { $0.contactID == contactID }
-            return Participant(id: contactID, targetLanguageCode: contact?.nativeLanguage ?? "EN") // Default auf "EN", falls kein Kontakt gefunden wird
+            return Participant(id: contactID, targetLanguageCode: contact?.nativeLanguage ?? "EN")
         }
         
-        let isGroup = participants.count > 1
-        let adminID = isGroup ? (AuthServiceManager.shared.user?.uid ?? "") : nil
+        isGroup = checkIfGroup()
+        let adminID = isGroup ? (uid) : nil
         let chatGroupID: String
         
         if isGroup {
@@ -85,13 +84,11 @@ import UIKit
             return
         }
         
-        // Holen der `nativeLanguage` des aktuellen Nutzers aus den `possibleContacts`
-        let userID = AuthServiceManager.shared.userID ?? ""
-        let userNativeLanguage = possibleContacts.first { $0.contactID == userID }?.nativeLanguage ?? "EN"
+        let userNativeLanguage = possibleContacts.first { $0.contactID == uid }?.nativeLanguage ?? "EN"
         
         let newChatGroup = ChatGroup(
             id: chatGroupID,
-            participants: [Participant(id: userID, targetLanguageCode: userNativeLanguage)] + participants,
+            participants: [Participant(id: self.uid, targetLanguageCode: userNativeLanguage)] + participants,
             isGroup: isGroup,
             admin: adminID,
             groupName: isGroup ? groupName : nil,
@@ -102,24 +99,25 @@ import UIKit
             do {
                 let created = try await manager.createChatGroup(chatGroup: newChatGroup)
                 if created {
+                    resetSelections()
                     isAddChatGroupSheetPresented = false
                 } else {
-                    alertMessage = "Group already exists."
+                    // Hier den Namen des Kontakts aus `possibleContacts` holen
+                    if let selectedContact = possibleContacts.first(where: { $0.contactID == newChatGroup.participants.last?.id }) {
+                        alertMessage = "Chat with \(selectedContact.nickname) already exists."
+                    } else {
+                        alertMessage = "Chat with this contact already exists."
+                    }
                     showAlert = true
+                    selectedContacts.removeAll()
                 }
             } catch {
-                print("Error creating chat group: \(error)")
+                print("Error creating chat group: \(error.localizedDescription)")
+                alertMessage = "Error creating chat group: \(error.localizedDescription)"
+                showAlert = true
             }
         }
     }
-
-
-    func getUserNativeLanguage() -> String {
-        // Implementiere hier die Logik, um die nativeLanguage des aktuellen Nutzers zu erhalten
-        // Beispielweise:
-        return possibleContacts.first { $0.contactID == AuthServiceManager.shared.userID }?.nativeLanguage ?? "EN"
-    }
-
 
     
     func resetSelections() {
@@ -133,4 +131,3 @@ import UIKit
         manager.removeListeners()
     }
 }
-
