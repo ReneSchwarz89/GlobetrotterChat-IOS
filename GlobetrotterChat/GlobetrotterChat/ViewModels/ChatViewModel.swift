@@ -14,33 +14,50 @@ import Observation
     var newMessageText: String = ""
     var targetLang: String = ""
     private var manager: MessagesManagerProtocol
+    private var chatGroup: ChatGroup
     
-    init(manager: MessagesManagerProtocol = FirebaseMessagesManager(), chatGroupID: String) {
+    init(manager: MessagesManagerProtocol = FirebaseMessagesManager(), chatGroup: ChatGroup) {
         self.manager = manager
-        setupListeners(chatGroupID: chatGroupID)
+        self.chatGroup = chatGroup
+        setupListeners()
     }
     
-    func setupListeners(chatGroupID: String) {
+    func setupListeners() {
+        let chatGroupID = chatGroup.id
         manager.setMessagesListener(chatGroupID: chatGroupID) { [weak self] messages in
             self?.messages = messages
         }
     }
     
-    func sendMessage(chatGroupID: String, senderId: String) {
+    func sendMessage(chatGroup: ChatGroup) {
         Task {
             do {
-                
-                let translationResponse = try await translateText()
-                let translatedText = translationResponse.translations.first?.text ?? newMessageText
-                
-                
+                // Hole alle Zielsprachen außer der eigenen
+                let userID = AuthServiceManager.shared.userID ?? ""
+                let targetLangs = chatGroup.participants
+                    .filter { $0.id != userID }
+                    .map { $0.targetLanguageCode }
+
+                // Übersetze den Text in alle Zielsprachen
+                let translationResponses = try await translateText(targetLangs: targetLangs)
+
+                // Erstelle ein Dictionary der Übersetzungen
+                var translationsDict: [String: String] = [:]
+                for (index, translationResponse) in translationResponses.enumerated() {
+                    let targetLang = targetLangs[index]
+                    let translatedText = translationResponse.translations.first?.text ?? newMessageText
+                    translationsDict[targetLang] = translatedText
+                }
+
+                // Erstelle die Nachricht mit den gesammelten Übersetzungen
                 let message = Message(
-                    chatGroupID: chatGroupID,
-                    senderId: senderId,
+                    id: UUID().uuidString,
+                    chatGroupID: chatGroup.id,
+                    senderId: userID,
                     text: newMessageText,
-                    translatedText: translatedText
+                    translations: translationsDict
                 )
-                
+
                 try await manager.sendMessage(message)
                 newMessageText = ""
             } catch {
@@ -48,9 +65,9 @@ import Observation
             }
         }
     }
-    
-    private func translateText() async throws -> TranslationResponse {
-        return try await DeepLTranslationManager.shared.translateText(text: newMessageText, targetLang: "EN")
+
+    private func translateText(targetLangs: [String]) async throws -> [TranslationResponse] {
+        return try await DeepLTranslationManager.shared.translateText(text: newMessageText, targetLangs: targetLangs)
     }
     
     deinit {

@@ -17,7 +17,7 @@ struct ProfileView: View {
     @State private var errorMessage: String?
     @State private var isPresentingError = false
     @State private var selectedImage: UIImage?
-    let languages = ["English", "Deutsch", "Español", "Français", "中文", "日本語", "한국어", "Italiano"]
+    
     
     var body: some View {
         NavigationStack {
@@ -68,10 +68,11 @@ struct ProfileView: View {
                     .padding(.bottom, 5)
                 
                 Picker("Native Language", selection: $viewModel.nativeLanguage) {
-                    ForEach(languages, id: \.self) { language in
-                        Text(language).tag(language)
+                    ForEach(languages.keys.sorted(), id: \.self) { code in
+                        Text(languages[code] ?? code).tag(code)
                             .foregroundColor(.arcticBlue)
                             .font(.system(size: 22, weight: .bold))
+                        
                     }
                 }
                 .pickerStyle(WheelPickerStyle())
@@ -122,6 +123,36 @@ struct ProfileView: View {
             viewModel.uploadProfileImage(imageData)
         }
     }
+    let languages: [String: String] = [
+        "BG": "Bulgarian",
+        "CS": "Czech",
+        "DA": "Danish",
+        "DE": "German",
+        "EL": "Greek",
+        "EN": "English",
+        "ES": "Spanish",
+        "ET": "Estonian",
+        "FI": "Finnish",
+        "FR": "French",
+        "HU": "Hungarian",
+        "ID": "Indonesian",
+        "IT": "Italian",
+        "JA": "Japanese",
+        "LT": "Lithuanian",
+        "LV": "Latvian",
+        "NL": "Dutch",
+        "PL": "Polish",
+        "PT": "Portuguese",
+        "RO": "Romanian",
+        "RU": "Russian",
+        "SK": "Slovak",
+        "SL": "Slovenian",
+        "SV": "Swedish",
+        "TR": "Turkish",
+        "UK": "Ukrainian",
+        "ZH": "Chinese"
+    ]
+
 }
 
 struct ImagePicker: UIViewControllerRepresentable {
@@ -154,10 +185,9 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
 }
 
 #Preview {
     ProfileView(viewModel: ProfileViewModel(manager: FirebaseProfileManager(uid: "XImrbbVdfXPCJwBRKcxF5i8VEzx1")))
 }
-
-

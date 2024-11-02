@@ -51,6 +51,7 @@ import Observation
                 loadProfile()
             } catch {
                 print("Error saving profile: \(error)")
+               
             }
         }
     }
@@ -63,11 +64,9 @@ import Observation
                 let path = "profile_images/\(UUID().uuidString).jpg"
                 let url = try await FirebaseStorageManager.shared.uploadImage(imageData, path: path)
                 self.profileImage = url.absoluteString
-                print("Image uploaded successfully: \(url)")
                 saveProfile()
             } catch {
                 self.errorMessage = "Error uploading image: \(error.localizedDescription)"
-                print(self.errorMessage ?? "")
             }
         }
     }
@@ -79,7 +78,6 @@ import Observation
                 self.profileImageData = imageData
             } catch {
                 self.errorMessage = "Error downloading image: \(error.localizedDescription)"
-                print(self.errorMessage ?? "")
             }
         }
     }

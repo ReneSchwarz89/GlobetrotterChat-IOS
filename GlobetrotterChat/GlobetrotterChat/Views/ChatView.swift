@@ -7,13 +7,15 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct ChatView: View {
     @State var viewModel: ChatViewModel
     let chatGroup: ChatGroup
 
     init(chatGroup: ChatGroup) {
         self.chatGroup = chatGroup
-        _viewModel = State(wrappedValue: ChatViewModel(manager: FirebaseMessagesManager(), chatGroupID: chatGroup.id))
+        _viewModel = State(wrappedValue: ChatViewModel(manager: FirebaseMessagesManager(), chatGroup: chatGroup))
     }
 
     var body: some View {
@@ -35,7 +37,7 @@ struct ChatView: View {
                 Spacer()
             }
             .padding(.horizontal, 16)
-
+            
             ScrollView {
                 VStack {
                     ForEach(viewModel.messages) { message in
@@ -44,14 +46,17 @@ struct ChatView: View {
                                 Spacer()
                                 Text(message.text)
                                     .padding()
-                                    .background(Color.blue)
+                                    .background(Color.arcticBlue)
                                     .foregroundColor(.white)
                                     .cornerRadius(10)
                                     .frame(maxWidth: 250, alignment: .trailing)
                             } else {
-                                Text(message.translatedText)
+                                // Hole die `targetLanguageCode` des Empfängers
+                                let recipientID = AuthServiceManager.shared.user?.uid
+                                let targetLanguageCode = chatGroup.participants.first(where: { $0.id == recipientID })?.targetLanguageCode ?? "EN"
+                                Text(message.translations[targetLanguageCode] ?? message.text)
                                     .padding()
-                                    .background(Color.gray)
+                                    .background(Color.arcticBlue.opacity(0.5))
                                     .foregroundColor(.white)
                                     .cornerRadius(10)
                                     .frame(maxWidth: 250, alignment: .leading)
@@ -61,23 +66,23 @@ struct ChatView: View {
                         .padding(message.senderId == AuthServiceManager.shared.user?.uid ? .leading : .trailing, 50)
                         .padding(.vertical, 5)
                     }
+                    .padding(.horizontal, 12)
                 }
+                
             }
-
+            
             HStack {
                 TextField("Nachricht eingeben...", text: $viewModel.newMessageText)
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
-
+                
                 Button(action: {
-                    
-                         viewModel.sendMessage(chatGroupID: chatGroup.id, senderId: AuthServiceManager.shared.user?.uid ?? "")
-                    
+                    viewModel.sendMessage(chatGroup: chatGroup)
                 }) {
                     Text("Senden")
                         .padding()
-                        .background(Color.green) // Farbe hier ändern
+                        .background(Color.green)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
@@ -86,4 +91,3 @@ struct ChatView: View {
         }
     }
 }
-

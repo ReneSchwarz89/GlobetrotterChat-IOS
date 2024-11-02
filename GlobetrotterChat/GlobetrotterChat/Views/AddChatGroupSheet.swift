@@ -56,8 +56,9 @@ struct AddChatGroupSheet: View {
                     }
                     
                     List(viewModel.possibleContacts.filter { contact in
-                        searchQuery.isEmpty ? true : contact.nickname.lowercased().contains(searchQuery.lowercased())
+                        contact.contactID != AuthServiceManager.shared.userID && (searchQuery.isEmpty ? true : contact.nickname.lowercased().contains(searchQuery.lowercased()))
                     }, id: \.contactID) { contact in
+
                         HStack {
                             if let profileImage = contact.profileImage, !profileImage.isEmpty {
                                 AsyncImage(url: URL(string: profileImage)) { image in

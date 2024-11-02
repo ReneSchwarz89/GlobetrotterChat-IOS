@@ -13,6 +13,7 @@ protocol ChatGroupsManagerProtocol {
     func removeListeners()
     func createChatGroup(chatGroup: ChatGroup) async throws -> Bool
     func doesChatGroupExist(otherContactID: String) async throws -> Bool
+    
 }
 /*
  func addParticipant(chatGroupId: String, participantId: String) async throws

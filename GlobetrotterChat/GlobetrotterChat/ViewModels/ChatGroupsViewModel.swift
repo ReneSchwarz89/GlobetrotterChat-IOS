@@ -65,7 +65,13 @@ import UIKit
     }
     
     func createChatGroup() {
-        let participants = Array(Set(selectedContacts)).map { Participant(id: $0, targetLanguageCode: "en") }
+        // Holen der `nativeLanguage` für jeden `selectedContact`
+        let participants = Array(Set(selectedContacts)).map { contactID -> Participant in
+            // Finde den Kontakt im `possibleContacts`-Array, um die `nativeLanguage` zu bekommen
+            let contact = possibleContacts.first { $0.contactID == contactID }
+            return Participant(id: contactID, targetLanguageCode: contact?.nativeLanguage ?? "EN") // Default auf "EN", falls kein Kontakt gefunden wird
+        }
+        
         let isGroup = participants.count > 1
         let adminID = isGroup ? (AuthServiceManager.shared.user?.uid ?? "") : nil
         let chatGroupID: String
@@ -79,9 +85,13 @@ import UIKit
             return
         }
         
+        // Holen der `nativeLanguage` des aktuellen Nutzers aus den `possibleContacts`
+        let userID = AuthServiceManager.shared.userID ?? ""
+        let userNativeLanguage = possibleContacts.first { $0.contactID == userID }?.nativeLanguage ?? "EN"
+        
         let newChatGroup = ChatGroup(
             id: chatGroupID,
-            participants: [Participant(id: AuthServiceManager.shared.userID ?? "", targetLanguageCode: "en")] + participants,
+            participants: [Participant(id: userID, targetLanguageCode: userNativeLanguage)] + participants,
             isGroup: isGroup,
             admin: adminID,
             groupName: isGroup ? groupName : nil,
@@ -101,6 +111,13 @@ import UIKit
                 print("Error creating chat group: \(error)")
             }
         }
+    }
+
+
+    func getUserNativeLanguage() -> String {
+        // Implementiere hier die Logik, um die nativeLanguage des aktuellen Nutzers zu erhalten
+        // Beispielweise:
+        return possibleContacts.first { $0.contactID == AuthServiceManager.shared.userID }?.nativeLanguage ?? "EN"
     }
 
 

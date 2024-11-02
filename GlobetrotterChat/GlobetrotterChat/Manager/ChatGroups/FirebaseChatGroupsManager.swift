@@ -11,16 +11,16 @@ import Observation
 
 @Observable class FirebaseChatGroupsManager: ChatGroupsManagerProtocol {
     static var shared = FirebaseChatGroupsManager()
-
+    
     private var db = Firestore.firestore()
     private let uid: String
     private var possibleContactsListener: ListenerRegistration?
     private var chatGroupsListener: ListenerRegistration?
-
+    
     init(uid: String = AuthServiceManager.shared.userID ?? "") {
         self.uid = uid
     }
-
+    
     func setPossibleContactsListener(completion: @escaping ([Contact]) -> Void) {
         possibleContactsListener = db.collection("Contacts").document(uid).collection("ContactRelations")
             .document("relations")
@@ -33,6 +33,17 @@ import Observation
                 print("Mögliche Kontakte erfolgreich abgerufen")
                 var contacts: [Contact] = []
                 let group = DispatchGroup()
+                
+                // Lade den eigenen Kontakt
+                group.enter()
+                self.db.collection("Contacts").document(self.uid).getDocument { document, error in
+                    if let document = document, let contact = try? document.data(as: Contact.self) {
+                        contacts.append(contact)
+                    }
+                    group.leave()
+                }
+                
+                // Lade die akzeptierten Kontakte
                 for contactID in contactRelations.acceptedContactIDs {
                     group.enter()
                     self.db.collection("Contacts").document(contactID).getDocument { document, error in
@@ -42,12 +53,14 @@ import Observation
                         group.leave()
                     }
                 }
+                
                 group.notify(queue: .main) {
                     completion(contacts)
                 }
             }
     }
 
+    
     func setChatGroupsListener(completion: @escaping ([ChatGroup]) -> Void) {
         chatGroupsListener = db.collection("ChatGroups")
             .addSnapshotListener { snapshot, error in
@@ -67,13 +80,12 @@ import Observation
                 completion(chatGroups)
             }
     }
-
-
+    
     func removeListeners() {
         possibleContactsListener?.remove()
         chatGroupsListener?.remove()
     }
-
+    
     func createChatGroup(chatGroup: ChatGroup) async throws -> Bool {
         let groupID: String
         if chatGroup.isGroup {
@@ -84,7 +96,7 @@ import Observation
         } else {
             let participants = chatGroup.participants.sorted { $0.id < $1.id } // Sort participants by ID
             groupID = "\(participants[0].id)_\(participants[1].id)" // Use sorted IDs to form the groupID
-
+            
             // Check if a single chat already exists
             let existingChatGroup = try await db.collection("ChatGroups")
                 .whereField("id", isEqualTo: groupID)
@@ -110,11 +122,11 @@ import Observation
         }
         return false
     }
-
+    
     func updateChatGroupActivity(for currentUserID: String, contactID: String, isActive: Bool) async throws {
         let chatGroupsRef = db.collection("ChatGroups")
         let snapshot = try await chatGroupsRef.getDocuments()
-
+        
         for document in snapshot.documents {
             let chatGroupID = document.documentID
             let chatGroupRef = db.collection("ChatGroups").document(chatGroupID)
@@ -128,7 +140,7 @@ import Observation
             }
         }
     }
-
+    
     func doesChatGroupExist(otherContactID: String) async throws -> Bool {
         let participants = [self.uid, otherContactID].sorted()
         let chatGroupID = "\(participants[0])_\(participants[1])"
@@ -137,7 +149,7 @@ import Observation
             .getDocuments()
         return !existingChatGroup.documents.isEmpty
     }
-
+    
     func addChatGroupReferences(for contactIDs: [String], chatGroupID: String) {
         contactIDs.forEach { contactID in
             let contactRef = db.collection("contacts").document(contactID).collection("contactRelations").document("chatgroups")
