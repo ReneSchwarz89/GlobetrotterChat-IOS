@@ -30,6 +30,9 @@
 		B5754AFC2C8E3A670010B5F5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5754AFB2C8E3A670010B5F5 /* GoogleService-Info.plist */; };
 		B5754AFE2C8E44220010B5F5 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AFD2C8E44220010B5F5 /* ProfileView.swift */; };
 		B5754B002C8E45240010B5F5 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AFF2C8E45240010B5F5 /* ProfileViewModel.swift */; };
+		B575D34F2CD7F3E10091DA69 /* QRCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B575D34E2CD7F3E10091DA69 /* QRCodeSheet.swift */; };
+		B575D3512CD7F9350091DA69 /* SendRequestSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B575D3502CD7F9350091DA69 /* SendRequestSheet.swift */; };
+		B575D3532CD802820091DA69 /* BlockedContactsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B575D3522CD802820091DA69 /* BlockedContactsSheet.swift */; };
 		B583C4722C9445DF00D1E004 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B583C4712C9445DF00D1E004 /* AuthViewModel.swift */; };
 		B583C4742C9453A200D1E004 /* ContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B583C4732C9453A200D1E004 /* ContactView.swift */; };
 		B583C4782C94576700D1E004 /* ChatGroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B583C4772C94576700D1E004 /* ChatGroupsView.swift */; };
@@ -67,6 +70,9 @@
 		B5754AFB2C8E3A670010B5F5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B5754AFD2C8E44220010B5F5 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		B5754AFF2C8E45240010B5F5 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		B575D34E2CD7F3E10091DA69 /* QRCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeSheet.swift; sourceTree = "<group>"; };
+		B575D3502CD7F9350091DA69 /* SendRequestSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendRequestSheet.swift; sourceTree = "<group>"; };
+		B575D3522CD802820091DA69 /* BlockedContactsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedContactsSheet.swift; sourceTree = "<group>"; };
 		B583C4712C9445DF00D1E004 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		B583C4732C9453A200D1E004 /* ContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactView.swift; sourceTree = "<group>"; };
 		B583C4772C94576700D1E004 /* ChatGroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatGroupsView.swift; sourceTree = "<group>"; };
@@ -160,11 +166,10 @@
 		B5754AE52C8E29480010B5F5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B575D34C2CD7F3610091DA69 /* ChatRoom */,
+				B575D34D2CD7F37E0091DA69 /* Contact */,
 				B5754AFD2C8E44220010B5F5 /* ProfileView.swift */,
-				B583C4732C9453A200D1E004 /* ContactView.swift */,
-				B583C4772C94576700D1E004 /* ChatGroupsView.swift */,
 				B5A31A7B2CBE7D5400271258 /* ChatView.swift */,
-				B5A31A832CC2573200271258 /* AddChatGroupSheet.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -208,6 +213,26 @@
 				B5754AFB2C8E3A670010B5F5 /* GoogleService-Info.plist */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		B575D34C2CD7F3610091DA69 /* ChatRoom */ = {
+			isa = PBXGroup;
+			children = (
+				B583C4772C94576700D1E004 /* ChatGroupsView.swift */,
+				B5A31A832CC2573200271258 /* AddChatGroupSheet.swift */,
+			);
+			path = ChatRoom;
+			sourceTree = "<group>";
+		};
+		B575D34D2CD7F37E0091DA69 /* Contact */ = {
+			isa = PBXGroup;
+			children = (
+				B583C4732C9453A200D1E004 /* ContactView.swift */,
+				B575D34E2CD7F3E10091DA69 /* QRCodeSheet.swift */,
+				B575D3502CD7F9350091DA69 /* SendRequestSheet.swift */,
+				B575D3522CD802820091DA69 /* BlockedContactsSheet.swift */,
+			);
+			path = Contact;
 			sourceTree = "<group>";
 		};
 		B583C4792C945E4200D1E004 /* Landing */ = {
@@ -347,7 +372,9 @@
 				B5A31A742CBD484000271258 /* FirebaseChatGroupsManager.swift in Sources */,
 				B54ED3212C9C8EAA00B84954 /* FirebaseProfileManager.swift in Sources */,
 				B583C4A52C98393C00D1E004 /* AuthManager.swift in Sources */,
+				B575D3532CD802820091DA69 /* BlockedContactsSheet.swift in Sources */,
 				B5A31A862CD11FF900271258 /* DeepLTranslationManager.swift in Sources */,
+				B575D34F2CD7F3E10091DA69 /* QRCodeSheet.swift in Sources */,
 				B5A31A7E2CBE7D6C00271258 /* ChatViewModel.swift in Sources */,
 				B53E95A12C9C6E8A003D89B1 /* ProfileManagerProtocol.swift in Sources */,
 				B5A31A842CC2573300271258 /* AddChatGroupSheet.swift in Sources */,
@@ -367,6 +394,7 @@
 				B5754AD92C8E25FF0010B5F5 /* AuthenticationView.swift in Sources */,
 				B5A31A782CBD502400271258 /* FirebaseMessagesManager.swift in Sources */,
 				B5A31A6E2CBD3A1900271258 /* ChatGroup.swift in Sources */,
+				B575D3512CD7F9350091DA69 /* SendRequestSheet.swift in Sources */,
 				B5754AD72C8E25FF0010B5F5 /* GlobetrotterChatApp.swift in Sources */,
 				B5754B002C8E45240010B5F5 /* ProfileViewModel.swift in Sources */,
 			);

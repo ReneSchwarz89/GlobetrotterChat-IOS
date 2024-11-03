@@ -11,14 +11,13 @@ import Observation
 import FirebaseStorage
 
 struct ProfileView: View {
-    
+
     @State var viewModel: ProfileViewModel
     @State var isImagePickerPresented: Bool = false
     @State private var errorMessage: String?
     @State private var isPresentingError = false
     @State private var selectedImage: UIImage?
-    
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -52,46 +51,38 @@ struct ProfileView: View {
                 .sheet(isPresented: $isImagePickerPresented, onDismiss: loadImage) {
                     ImagePicker(image: $selectedImage)
                 }
-                
+
                 // Nickname-Textfeld
                 TextField("Nickname", text: $viewModel.nickname)
                     .padding()
                     .background(Color.white.opacity(0.8))
                     .cornerRadius(10)
                     .shadow(radius: 5)
-                
+
                 // Native Language Picker mit Beschriftung und Hintergrund
                 Text("Native Language")
                     .font(.headline)
                     .foregroundColor(.arcticBlue)
                     .padding(.bottom, 5)
-                
+
                 Picker("Native Language", selection: $viewModel.nativeLanguage) {
                     ForEach(languages.keys.sorted(), id: \.self) { code in
                         Text(languages[code] ?? code).tag(code)
                             .foregroundColor(.arcticBlue)
                             .font(.system(size: 22, weight: .bold))
-                        
                     }
                 }
                 .pickerStyle(WheelPickerStyle())
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.8)))
                 .shadow(radius: 5)
-                
-                Button(action: {
-                    viewModel.saveProfile()
-                }) {
-                    Text("Save")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.arcticBlue.opacity(0.7))
-                        .cornerRadius(25)
-                        .shadow(radius: 5)
-                }
-                
-                Button(action: {
+            }
+            .padding(.horizontal, 40)
+            .alert(isPresented: $isPresentingError) {
+                Alert(title: Text("Error"), message: Text(errorMessage ?? "Unknown error"), dismissButton: .default(Text("OK")))
+            }
+            .onAppear { viewModel.loadProfile() }
+            .navigationBarItems(
+                leading: Button(action: {
                     do {
                         try AuthServiceManager.shared.signOut()
                     } catch {
@@ -101,21 +92,18 @@ struct ProfileView: View {
                     Text("Logout")
                         .font(.headline)
                         .foregroundColor(.arcticBlue)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white.opacity(0.9))
-                        .cornerRadius(25)
-                        .shadow(color: .arcticBlue, radius: 5)
+                },
+                trailing: Button(action: {
+                    viewModel.saveProfile()
+                }) {
+                    Text("Save")
+                        .font(.headline)
+                        .foregroundColor(.arcticBlue)
                 }
-            }
-            .padding(.horizontal, 40)
-            .alert(isPresented: $isPresentingError) {
-                Alert(title: Text("Error"), message: Text(errorMessage ?? "Unknown error"), dismissButton: .default(Text("OK")))
-            }
-            .onAppear { viewModel.loadProfile() }
+            )
         }
     }
-    
+
     func loadImage() {
         guard let selectedImage = selectedImage else { return }
         if let imageData = selectedImage.jpegData(compressionQuality: 0.8) {
@@ -151,8 +139,9 @@ struct ProfileView: View {
         "UK": "Ukrainian",
         "ZH": "Chinese"
     ]
-
 }
+
+
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?

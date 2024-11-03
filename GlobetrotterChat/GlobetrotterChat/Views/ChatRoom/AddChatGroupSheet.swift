@@ -18,7 +18,10 @@ struct AddChatGroupSheet: View {
     
     var body: some View {
         NavigationStack {
+            Text("Create Chat Group")
+                .font(.headline)
             Form {
+                
                 if viewModel.selectedContacts.count > 1 {
                     Section(header: Text("Group Details")) {
                         HStack {
@@ -83,10 +86,8 @@ struct AddChatGroupSheet: View {
                                     .font(.subheadline)
                             }
                             Spacer()
-                            if viewModel.selectedContacts.contains(contact.contactID) {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.blue)
-                            }
+                            Image(systemName: viewModel.selectedContacts.contains(contact.contactID) ? "checkmark.circle.fill" : "checkmark.circle")
+                                .foregroundColor(viewModel.selectedContacts.contains(contact.contactID) ? Color("ArcticBlue") : Color.gray)
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -96,7 +97,6 @@ struct AddChatGroupSheet: View {
                     }
                 }
             }
-            .navigationTitle("New Chat Group")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {

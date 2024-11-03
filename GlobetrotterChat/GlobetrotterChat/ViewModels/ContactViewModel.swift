@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import UIKit
 
 @Observable class ContactViewModel {
     var pendingRequests: [ContactRequest] = [] {
@@ -23,7 +24,9 @@ import Observation
     var sendToken: String = ""
     var errorMessage: String?
     var uid: String { return manager.uid }
-    
+    var isQRCodeSheetPresented = false
+    var isSendRequestSheetPresented = false
+    var isBlockedContactsSheetPresented = false
     private var manager: ContactManagerProtocol
     
     init(manager: ContactManagerProtocol = FirebaseContactManager()) {
@@ -75,6 +78,10 @@ import Observation
             self.alertMessage = "Do you want to accept the request from \(request.from)?"
             self.showPendingRequestSheet = true
         }
+    }
+    
+    func copyUIDToClipboard() {
+        UIPasteboard.general.string = uid
     }
     
     deinit {
