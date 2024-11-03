@@ -9,13 +9,16 @@ import SwiftUI
 import Observation
 
 struct ChatGroupsView: View {
-    @State var viewModel = ChatGroupsViewModel()
+    @State private var tabBar: UITabBar! = nil
+    @State var viewModel: ChatGroupsViewModel
 
     var body: some View {
         NavigationStack {
             VStack {
                 List(viewModel.chatGroups) { chatGroup in
-                    NavigationLink(destination: ChatView(chatGroup: chatGroup)) {
+                    NavigationLink(destination: ChatView(chatGroup: chatGroup)
+                        .onAppear { self.tabBar.isHidden = true }
+                        .onDisappear { self.tabBar.isHidden = false }) {
                         HStack {
                             if chatGroup.isGroup {
                                 AsyncImage(url: URL(string: chatGroup.groupPictureURL ?? "")) { image in
@@ -51,27 +54,49 @@ struct ChatGroupsView: View {
                         }
                     }
                 }
-            }
-            .navigationTitle("Chats")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack {
-                        Button(action: {
-                            viewModel.isAddChatGroupSheetPresented = true
-                        }) {
-                            Image(systemName: "plus")
+                .navigationTitle("Chats")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        HStack {
+                            Button(action: {
+                                viewModel.isAddChatGroupSheetPresented = true
+                            }) {
+                                Image(systemName: "plus")
+                            }
                         }
                     }
                 }
+                .sheet(isPresented: $viewModel.isAddChatGroupSheetPresented) {
+                    AddChatGroupSheet(viewModel: viewModel)
+                }
             }
-            .sheet(isPresented: $viewModel.isAddChatGroupSheetPresented) {
-                AddChatGroupSheet(viewModel: viewModel)
+            .background(TabBarAccessor { tabbar in
+                self.tabBar = tabbar
+            })
+            .onAppear {
+                viewModel.isTabBarVisible = true
             }
         }
     }
 }
 
+
 #Preview {
     ChatGroupsView(viewModel: ChatGroupsViewModel())
 }
 
+struct TabBarAccessor: UIViewControllerRepresentable {
+    var callback: (UITabBar) -> Void
+
+    func makeUIViewController(context: UIViewControllerRepresentableContext<TabBarAccessor>) -> UIViewController {
+        let viewController = UIViewController()
+        DispatchQueue.main.async {
+            if let tabBarController = viewController.tabBarController {
+                self.callback(tabBarController.tabBar)
+            }
+        }
+        return viewController
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: UIViewControllerRepresentableContext<TabBarAccessor>) {}
+}

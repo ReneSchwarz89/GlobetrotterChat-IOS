@@ -21,6 +21,7 @@ import UIKit
     var isUploadingImage = false
     var showAlert = false
     var alertMessage = ""
+    var isTabBarVisible = true
     
     private var manager: ChatGroupsManagerProtocol
     var uid: String { return manager.uid }
