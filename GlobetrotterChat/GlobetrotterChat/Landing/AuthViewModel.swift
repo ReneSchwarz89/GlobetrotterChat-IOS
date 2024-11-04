@@ -45,10 +45,6 @@ enum AuthError: LocalizedError {
                 error = AuthError.noEmail
                 return
             }
-            guard isValidEmail(email) else {
-                error = AuthError.invalidEmail
-                return
-            }
             guard password.count >= 6 else {
                 error = AuthError.weakPassword
                 return
@@ -80,7 +76,7 @@ enum AuthError: LocalizedError {
             }
         }
     }
-
+    
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0--z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
@@ -88,9 +84,12 @@ enum AuthError: LocalizedError {
     }
     
     private func clearPrivateInfo() {
-        email = ""
-        password = ""
-        error = nil
+        Task {
+            try await Task.sleep(nanoseconds: 2 * 2_000_000_000) // 2 Sekunden Delay
+            DispatchQueue.main.async {
+                self.email = ""
+                self.password = ""
+            }
+        }
     }
 }
-

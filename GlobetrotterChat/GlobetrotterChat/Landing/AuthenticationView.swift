@@ -46,6 +46,7 @@ struct AuthenticationView: View {
                         TextField("Email Address", text: $viewModel.email)
                             .autocapitalization(.none)
                             .keyboardType(.emailAddress)
+                            .autocorrectionDisabled()
                             .textContentType(.emailAddress)
                             .padding()
                             .background(Color.white.opacity(0.8))
@@ -96,7 +97,7 @@ struct AuthenticationView: View {
                             .frame(height: 50)
                             .background(Color.arcticBlue.opacity(0.7))
                             .cornerRadius(25)
-                            .shadow(radius: 5)
+                            
                         }
                         .disabled(hasPressedSignUp)
                     }
@@ -112,24 +113,27 @@ struct AuthenticationView: View {
                                 Spacer()
                                 if hasPressedSignIn {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .arcticBlue))
                                         .padding(.trailing, 16)
                                 }
                             }
                             Text("Sign In")
                                 .font(.headline)
-                                .foregroundColor(.white)
+                                .foregroundColor(.arcticBlue)
                                 .padding()
                                 .frame(maxWidth: .infinity)
                         }
                         .frame(height: 50)
-                        .background(Color.arcticBlue.opacity(0.7))
+                        .background(Color.white.opacity(0.9))
                         .cornerRadius(25)
-                        .shadow(radius: 5)
+                        .shadow(color: .arcticBlue, radius: 5)
                     }
                     .disabled(hasPressedSignIn)
                     .padding(40)
-                    Spacer()
+                    .padding(.top, 100)
+                    .padding(.bottom, 40)
+                        
+                    
                 }
                 
                 
