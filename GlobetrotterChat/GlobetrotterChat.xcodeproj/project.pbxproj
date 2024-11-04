@@ -73,6 +73,7 @@
 		B575D34E2CD7F3E10091DA69 /* QRCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeSheet.swift; sourceTree = "<group>"; };
 		B575D3502CD7F9350091DA69 /* SendRequestSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendRequestSheet.swift; sourceTree = "<group>"; };
 		B575D3522CD802820091DA69 /* BlockedContactsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedContactsSheet.swift; sourceTree = "<group>"; };
+		B575D3542CD8E35B0091DA69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B583C4712C9445DF00D1E004 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		B583C4732C9453A200D1E004 /* ContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactView.swift; sourceTree = "<group>"; };
 		B583C4772C94576700D1E004 /* ChatGroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatGroupsView.swift; sourceTree = "<group>"; };
@@ -129,6 +130,7 @@
 		B5754AD52C8E25FF0010B5F5 /* GlobetrotterChat */ = {
 			isa = PBXGroup;
 			children = (
+				B575D3542CD8E35B0091DA69 /* Info.plist */,
 				B5754ADA2C8E26000010B5F5 /* Assets.xcassets */,
 				B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */,
 				B583C49E2C957CA500D1E004 /* ContentView.swift */,
@@ -533,6 +535,7 @@
 				DEVELOPMENT_TEAM = HPN793TN93;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GlobetrotterChat/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -566,6 +569,7 @@
 				DEVELOPMENT_TEAM = HPN793TN93;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GlobetrotterChat/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

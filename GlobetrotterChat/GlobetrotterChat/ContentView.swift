@@ -67,4 +67,5 @@ extension UserDefaults {
 
 #Preview {
     ContentView()
+        .accentColor(.arcticBlue)
 }

@@ -14,7 +14,7 @@ struct ChatGroupsView: View {
 
     var body: some View {
         NavigationStack {
-            VStack {
+            
                 List(viewModel.chatGroups) { chatGroup in
                     NavigationLink(destination: ChatView(chatGroup: chatGroup)
                         .onAppear { self.tabBar.isHidden = true }
@@ -80,7 +80,7 @@ struct ChatGroupsView: View {
                         }
                     }
                 }
-            }
+            
             .navigationTitle("Chats")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

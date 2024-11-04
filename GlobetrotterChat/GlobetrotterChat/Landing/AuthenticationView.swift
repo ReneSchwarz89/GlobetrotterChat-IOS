@@ -17,7 +17,7 @@ struct AuthenticationView: View {
     @State var viewModel = AuthViewModel()
     
     var body: some View {
-        NavigationStack() {
+        NavigationStack {
             ZStack {
                 // Hintergrundbild
                 Image("loginBackground")
@@ -112,35 +112,29 @@ struct AuthenticationView: View {
                                 Spacer()
                                 if hasPressedSignIn {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .arcticBlue))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                         .padding(.trailing, 16)
-                                } else {
-                                    VStack {
-                                        Image(systemName: "arrow.2.circlepath.circle")
-                                            .font(.title)
-                                            .foregroundColor(.white)
-                                        Spacer()
-                                    }
                                 }
                             }
                             Text("Sign In")
                                 .font(.headline)
-                                .foregroundColor(.arcticBlue)
+                                .foregroundColor(.white)
                                 .padding()
                                 .frame(maxWidth: .infinity)
                         }
                         .frame(height: 50)
-                        .background(Color.white.opacity(0.7))
+                        .background(Color.arcticBlue.opacity(0.7))
                         .cornerRadius(25)
                         .shadow(radius: 5)
                     }
                     .disabled(hasPressedSignIn)
-                    .padding(.horizontal, 40)
-                    .padding(.top, 40)
-                    
+                    .padding(40)
                     Spacer()
                 }
+                
+                
             }
+            
         }
         .alert(isPresented: .constant(viewModel.error != nil), error: viewModel.error) {
             Button("OK", role: .cancel) {
