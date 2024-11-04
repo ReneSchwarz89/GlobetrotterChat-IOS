@@ -11,6 +11,7 @@ import Observation
 
 @Observable class ChatViewModel {
     var messages: [Message] = []
+    var possibleContacts: [Contact] = []
     var newMessageText: String = ""
     var targetLang: String = ""
     var uid: String { return manager.uid }
@@ -27,6 +28,9 @@ import Observation
         let chatGroupID = chatGroup.id
         manager.setMessagesListener(chatGroupID: chatGroupID) { [weak self] messages in
             self?.messages = messages
+        }
+        FirebaseChatGroupsManager.shared.setPossibleContactsListener { [weak self] contacts in
+            self?.possibleContacts = contacts
         }
     }
     
@@ -72,5 +76,6 @@ import Observation
     
     deinit {
         manager.removeListeners()
+        FirebaseChatGroupsManager().removeListeners()
     }
 }

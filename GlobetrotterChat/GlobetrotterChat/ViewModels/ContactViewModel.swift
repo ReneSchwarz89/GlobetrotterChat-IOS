@@ -27,11 +27,13 @@ import UIKit
     var isQRCodeSheetPresented = false
     var isSendRequestSheetPresented = false
     var isBlockedContactsSheetPresented = false
+    
     private var manager: ContactManagerProtocol
     
     init(manager: ContactManagerProtocol = FirebaseContactManager()) {
         self.manager = manager
         setupListeners()
+        // Generiere den QR-Code beim Initialisieren des ViewModels
     }
     
     func setupListeners() {
@@ -84,7 +86,9 @@ import UIKit
         UIPasteboard.general.string = uid
     }
     
+    
     deinit {
         manager.removeListeners()
     }
 }
+

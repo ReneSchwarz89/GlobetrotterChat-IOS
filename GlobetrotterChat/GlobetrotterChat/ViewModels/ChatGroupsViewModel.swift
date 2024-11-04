@@ -69,7 +69,7 @@ import UIKit
     func createChatGroup() {
         let participants = Array(Set(selectedContacts)).map { contactID -> Participant in
             let contact = possibleContacts.first { $0.contactID == contactID }
-            return Participant(id: contactID, targetLanguageCode: contact?.nativeLanguage ?? "EN")
+            return Participant(id: contactID, targetLanguageCode: contact?.nativeLanguage ?? "EN", nickname: contact?.nickname ?? "Unknown")
         }
         
         isGroup = checkIfGroup()
@@ -86,10 +86,11 @@ import UIKit
         }
         
         let userNativeLanguage = possibleContacts.first { $0.contactID == uid }?.nativeLanguage ?? "EN"
+        let userNickname = possibleContacts.first { $0.contactID == uid }?.nickname ?? "Unknown"
         
         let newChatGroup = ChatGroup(
             id: chatGroupID,
-            participants: [Participant(id: self.uid, targetLanguageCode: userNativeLanguage)] + participants,
+            participants: [Participant(id: self.uid, targetLanguageCode: userNativeLanguage, nickname: userNickname)] + participants,
             isGroup: isGroup,
             admin: adminID,
             groupName: isGroup ? groupName : nil,
@@ -103,7 +104,6 @@ import UIKit
                     resetSelections()
                     isAddChatGroupSheetPresented = false
                 } else {
-                    // Hier den Namen des Kontakts aus `possibleContacts` holen
                     if let selectedContact = possibleContacts.first(where: { $0.contactID == newChatGroup.participants.last?.id }) {
                         alertMessage = "Chat with \(selectedContact.nickname) already exists."
                     } else {

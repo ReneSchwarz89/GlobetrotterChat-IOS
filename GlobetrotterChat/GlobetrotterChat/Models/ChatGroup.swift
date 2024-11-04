@@ -35,7 +35,7 @@ extension ChatGroup {
     static var sample: Self {
         .init(
             id: "group1",
-            participants: [Participant(id: "user1", targetLanguageCode: "en"), Participant(id: "user2", targetLanguageCode: "de")],
+            participants: [Participant(id: "user1", targetLanguageCode: "en", nickname: "hans"), Participant(id: "user2", targetLanguageCode: "de",nickname: "peter")],
             isGroup: false,
             admin: "user1",
             latestMessage: Message.sample,
@@ -49,8 +49,12 @@ extension ChatGroup {
 struct Participant: Identifiable, Codable, Hashable {
     var id: String
     var targetLanguageCode: String
+    var nickname: String
     
     func toDictionary() -> [String: Any] {
-        ["id": id, "targetLanguageCode": targetLanguageCode]
+        ["id": id,
+         "targetLanguageCode": targetLanguageCode,
+         "nickname": nickname
+        ]
     }
 }

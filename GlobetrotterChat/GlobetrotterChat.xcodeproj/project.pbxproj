@@ -190,12 +190,12 @@
 		B5754AE72C8E29AB0010B5F5 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
-				B54ED33C2CB40ABB00B84954 /* FirebaseStorageManager.swift */,
 				B5A31A7F2CBE913700271258 /* Profile */,
 				B5A31A802CBE914B00271258 /* Contact */,
 				B5A31A812CBE916300271258 /* ChatGroups */,
 				B5A31A822CBE918600271258 /* Messages */,
 				B5A31A852CD11FF900271258 /* DeepLTranslationManager.swift */,
+				B54ED33C2CB40ABB00B84954 /* FirebaseStorageManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";

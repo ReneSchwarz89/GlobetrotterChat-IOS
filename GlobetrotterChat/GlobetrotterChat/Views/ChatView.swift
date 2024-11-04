@@ -11,12 +11,12 @@ struct ChatView: View {
     @State var viewModel: ChatViewModel
     let chatGroup: ChatGroup
     @State private var scrollViewProxy: ScrollViewProxy? = nil
-    
+
     init(chatGroup: ChatGroup) {
         self.chatGroup = chatGroup
         _viewModel = State(wrappedValue: ChatViewModel(manager: FirebaseMessagesManager(), chatGroup: chatGroup))
     }
-    
+
     var body: some View {
         NavigationView {
             VStack {
@@ -88,21 +88,47 @@ struct ChatView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     HStack {
-                        AsyncImage(url: URL(string: chatGroup.groupPictureURL ?? "")) { image in
-                            image.resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 40, height: 40)
-                                .clipShape(Circle())
-                        } placeholder: {
-                            Circle()
-                                .fill(Color.gray)
-                                .frame(width: 40, height: 40)
+                        if chatGroup.isGroup {
+                            AsyncImage(url: URL(string: chatGroup.groupPictureURL ?? "")) { image in
+                                image.resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                            } placeholder: {
+                                Circle()
+                                    .fill(Color.gray)
+                                    .frame(width: 40, height: 40)
+                            }
+                            Text(chatGroup.groupName ?? "Chat Group Details")
+                                .font(.title2)
+                                .padding(.leading, 8)
+                        } else {
+                            if let otherParticipant = chatGroup.participants.first(where: { $0.id != viewModel.uid }) {
+                                if let contact = viewModel.possibleContacts.first(where: { $0.contactID == otherParticipant.id }) {
+                                    AsyncImage(url: URL(string: contact.profileImage ?? "")) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            ProgressView()
+                                        case .success(let image):
+                                            image.resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 50, height: 50)
+                                                .clipShape(Circle())
+                                        case .failure:
+                                            Circle()
+                                                .fill(Color.gray)
+                                                .frame(width: 50, height: 50)
+                                        @unknown default:
+                                            EmptyView()
+                                        }
+                                    }
+                                    Text(contact.nickname)
+                                        .font(.headline)
+                                }
+                            }
                         }
-                        Text(chatGroup.groupName ?? "Chat Group Details")
-                            .font(.title2)
-                            .padding(.leading, 8)
                     }
                 }
             }
