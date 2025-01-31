@@ -14,7 +14,7 @@ struct ChatGroupsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack{
+            VStack {
                 List(viewModel.chatGroups) { chatGroup in
                     NavigationLink(destination: ChatView(chatGroup: chatGroup)
                         .onAppear { self.tabBar.isHidden = true }

@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 enum DeepLTranslationError: Error {
     case invalidURL
     case networkError(Error)

@@ -130,8 +130,8 @@ struct AuthenticationView: View {
                     }
                     .disabled(hasPressedSignIn)
                     .padding(40)
-                    .padding(.top, 100)
-                    .padding(.bottom, 40)
+                    .padding(.top, 60)
+                    .padding(.bottom, 60)
                         
                     
                 }
