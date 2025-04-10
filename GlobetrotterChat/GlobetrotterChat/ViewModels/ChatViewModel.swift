@@ -13,7 +13,7 @@ import Observation
     var messages: [Message] = []
     var possibleContacts: [Contact] = []
     var newMessageText: String = ""
-    var targetLang: String = ""
+    
     var uid: String { return manager.uid }
     private var manager: MessagesManagerProtocol
     private var chatGroup: ChatGroup
@@ -21,7 +21,6 @@ import Observation
     init(manager: MessagesManagerProtocol = FirebaseMessagesManager(), chatGroup: ChatGroup) {
         self.manager = manager
         self.chatGroup = chatGroup
-        setupListeners()
     }
     
     func setupListeners() {

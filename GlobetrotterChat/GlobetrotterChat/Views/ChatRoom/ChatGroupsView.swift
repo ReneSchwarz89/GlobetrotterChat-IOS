@@ -9,7 +9,7 @@ import SwiftUI
 import Observation
 
 struct ChatGroupsView: View {
-    @State var viewModel: ChatGroupsViewModel
+    @Bindable var viewModel: ChatGroupsViewModel
     @State private var tabBar: UITabBar! = nil
     
     var body: some View {
@@ -17,8 +17,8 @@ struct ChatGroupsView: View {
             VStack {
                 List(viewModel.chatGroups) { chatGroup in
                     NavigationLink(destination: ChatView(chatGroup: chatGroup)
-                        .onAppear { self.tabBar.isHidden = true }
-                        .onDisappear { self.tabBar.isHidden = false }) {
+                        .onAppear { tabBar.isHidden = true }
+                        .onDisappear { tabBar.isHidden = false }) {
                             HStack {
                                 if chatGroup.isGroup {
                                     if let url = URL(string: chatGroup.groupPictureURL ?? "") {
@@ -101,6 +101,7 @@ struct ChatGroupsView: View {
                 })
                 .onAppear {
                     viewModel.isTabBarVisible = true
+                    viewModel.setupListeners()
                 }
             }
         }

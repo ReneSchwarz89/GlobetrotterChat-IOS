@@ -32,8 +32,6 @@ import UIKit
     
     init(manager: ContactManagerProtocol = FirebaseContactManager()) {
         self.manager = manager
-        setupListeners()
-        // Generiere den QR-Code beim Initialisieren des ViewModels
     }
     
     func setupListeners() {
@@ -67,7 +65,6 @@ import UIKit
             do {
                 try await manager.updateRequestStatus(request: request, to: newStatus)
                 print("Request status updated successfully to \(newStatus.rawValue) for request \(request.id)")
-                setupListeners()
             } catch {
                 self.errorMessage = "Error updating request status: \(error.localizedDescription)"
                 print(self.errorMessage ?? "")

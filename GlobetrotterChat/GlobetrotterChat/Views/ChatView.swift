@@ -118,6 +118,7 @@ struct ChatView: View {
                     }
                     .onAppear {
                         self.scrollViewProxy = proxy
+                        viewModel.setupListeners()
                     }
                 }
 

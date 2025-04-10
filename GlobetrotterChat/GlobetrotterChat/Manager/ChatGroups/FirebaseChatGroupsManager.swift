@@ -7,9 +7,8 @@
 
 import Foundation
 import FirebaseFirestore
-import Observation
 
-@Observable class FirebaseChatGroupsManager: ChatGroupsManagerProtocol {
+class FirebaseChatGroupsManager: ChatGroupsManagerProtocol {
     static var shared = FirebaseChatGroupsManager()
     
     private var db = Firestore.firestore()

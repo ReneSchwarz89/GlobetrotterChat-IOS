@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-@Observable class FirebaseMessagesManager: MessagesManagerProtocol {
+class FirebaseMessagesManager: MessagesManagerProtocol {
     private var db = Firestore.firestore()
     private var messagesListener: ListenerRegistration?
     var uid: String

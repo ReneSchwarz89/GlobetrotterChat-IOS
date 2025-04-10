@@ -38,6 +38,11 @@ enum AuthError: LocalizedError {
     var email: String = ""
     var password: String = ""
     var error: AuthError?
+    var isPasswordVisible: Bool = false
+    var hasPressedSignUp = false
+    var hasPressedSignIn = false
+    var lastErrorMessage = ""
+    var isPresentingError = false
     
     func signIn(email: String, password: String) {
         Task {
@@ -54,6 +59,10 @@ enum AuthError: LocalizedError {
                 clearPrivateInfo()
             } catch let error as AuthError {
                 self.error = error
+                isPresentingError = true
+            } catch {
+                self.error = AuthError.notAuthenticated
+                isPresentingError = true
             }
         }
     }
@@ -84,12 +93,10 @@ enum AuthError: LocalizedError {
     }
     
     private func clearPrivateInfo() {
-        Task {
+        Task {@MainActor in
             try await Task.sleep(nanoseconds: 2 * 2_000_000_000) // 2 Sekunden Delay
-            DispatchQueue.main.async {
-                self.email = ""
-                self.password = ""
-            }
+                email = ""
+                password = ""
         }
     }
 }

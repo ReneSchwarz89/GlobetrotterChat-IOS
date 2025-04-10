@@ -4,7 +4,8 @@
 //
 //  Created by René Schwarz on 08.09.24.
 //
-import Foundation
+
+import SwiftUI
 import Observation
 
 @Observable class ProfileViewModel {
@@ -14,6 +15,9 @@ import Observation
     var profileImage: String?
     var profileImageData: Data?
     var errorMessage: String?
+    var isImagePickerPresented: Bool = false
+    var isPresentingError = false
+    var selectedImage: UIImage?
     
     var contact: Contact?
     var uid: String { return manager.uid }

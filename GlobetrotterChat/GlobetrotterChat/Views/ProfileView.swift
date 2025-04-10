@@ -12,18 +12,14 @@ import FirebaseStorage
 
 struct ProfileView: View {
 
-    @State var viewModel: ProfileViewModel
-    @State var isImagePickerPresented: Bool = false
-    @State private var errorMessage: String?
-    @State private var isPresentingError = false
-    @State private var selectedImage: UIImage?
+    @Bindable var viewModel: ProfileViewModel
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
                 // Profilbild
                 Button(action: {
-                    self.isImagePickerPresented = true
+                    viewModel.isImagePickerPresented = true
                 }) {
                     ZStack {
                         if let profileImageData = viewModel.profileImageData, let uiImage = UIImage(data: profileImageData) {
@@ -48,8 +44,8 @@ struct ProfileView: View {
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Color.white, lineWidth: 4))
                 .shadow(radius: 10)
-                .sheet(isPresented: $isImagePickerPresented, onDismiss: loadImage) {
-                    ImagePicker(image: $selectedImage)
+                .sheet(isPresented: $viewModel.isImagePickerPresented, onDismiss: loadImage) {
+                    ImagePicker(image: $viewModel.selectedImage)
                 }
 
                 // Nickname-Textfeld
@@ -77,8 +73,8 @@ struct ProfileView: View {
                 .shadow(radius: 5)
             }
             .padding(.horizontal, 40)
-            .alert(isPresented: $isPresentingError) {
-                Alert(title: Text("Error"), message: Text(errorMessage ?? "Unknown error"), dismissButton: .default(Text("OK")))
+            .alert(isPresented: $viewModel.isPresentingError) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? "Unknown error"), dismissButton: .default(Text("OK")))
             }
             .onAppear { viewModel.loadProfile() }
             .navigationBarItems(
@@ -105,7 +101,7 @@ struct ProfileView: View {
     }
 
     func loadImage() {
-        guard let selectedImage = selectedImage else { return }
+        guard let selectedImage = viewModel.selectedImage else { return }
         if let imageData = selectedImage.jpegData(compressionQuality: 0.8) {
             viewModel.uploadProfileImage(imageData)
         }

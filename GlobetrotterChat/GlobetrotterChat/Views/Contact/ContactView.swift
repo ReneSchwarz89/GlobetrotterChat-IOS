@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ContactView: View {
-    @State var viewModel: ContactViewModel
+    @Bindable var viewModel: ContactViewModel
     
     var body: some View {
         NavigationStack {

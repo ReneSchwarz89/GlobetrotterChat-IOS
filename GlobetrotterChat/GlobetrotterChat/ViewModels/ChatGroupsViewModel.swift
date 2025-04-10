@@ -28,7 +28,7 @@ import UIKit
     
     init(manager: ChatGroupsManagerProtocol = FirebaseChatGroupsManager()) {
         self.manager = manager
-        setupListeners()
+        
     }
     
     func setupListeners() {

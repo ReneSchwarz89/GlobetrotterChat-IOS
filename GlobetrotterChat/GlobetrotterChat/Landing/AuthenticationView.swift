@@ -9,11 +9,7 @@ import SwiftUI
 import Observation
 
 struct AuthenticationView: View {
-    @State private var isPasswordVisible: Bool = false
-    @State private var hasPressedSignUp = false
-    @State private var hasPressedSignIn = false
-    @State private var lastErrorMessage = ""
-    @State private var isPresentingError = false
+   
     @State var viewModel = AuthViewModel()
     
     var body: some View {
@@ -55,7 +51,7 @@ struct AuthenticationView: View {
                         
                         // Passwort-Textfeld mit der Option, das Passwort anzuzeigen
                         HStack {
-                            if isPasswordVisible {
+                            if viewModel.isPasswordVisible {
                                 TextField("Password", text: $viewModel.password)
                                     .padding()
                                     .frame(height: 50)
@@ -65,9 +61,9 @@ struct AuthenticationView: View {
                                     .frame(height: 50)
                             }
                             
-                            Button(action: { self.isPasswordVisible.toggle() }) {
-                                Image(systemName: self.isPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                                    .foregroundColor(self.isPasswordVisible ? Color.green : .gray.opacity(0.7))
+                            Button(action: { viewModel.isPasswordVisible.toggle() }) {
+                                Image(systemName: viewModel.isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                                    .foregroundColor(viewModel.isPasswordVisible ? Color.green : .gray.opacity(0.7))
                                     .padding(.trailing)
                             }
                         }
@@ -76,13 +72,13 @@ struct AuthenticationView: View {
                         .shadow(radius: 5)
                         
                         Button(action: {
-                            hasPressedSignUp = true
+                            viewModel.hasPressedSignUp = true
                             viewModel.signUp(email: viewModel.email, password: viewModel.password)
                         }) {
                             ZStack {
                                 HStack {
                                     Spacer()
-                                    if hasPressedSignUp {
+                                    if viewModel.hasPressedSignUp {
                                         ProgressView()
                                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                             .padding(.trailing, 16)
@@ -99,19 +95,19 @@ struct AuthenticationView: View {
                             .cornerRadius(25)
                             
                         }
-                        .disabled(hasPressedSignUp)
+                        .disabled(viewModel.hasPressedSignUp)
                     }
                     .padding(.horizontal, 40)
                     
                     // Sign In Button
                     Button(action: {
-                        hasPressedSignIn = true
+                        viewModel.hasPressedSignIn = true
                         viewModel.signIn(email: viewModel.email, password: viewModel.password)
                     }) {
                         ZStack {
                             HStack {
                                 Spacer()
-                                if hasPressedSignIn {
+                                if viewModel.hasPressedSignIn {
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle(tint: .arcticBlue))
                                         .padding(.trailing, 16)
@@ -128,7 +124,7 @@ struct AuthenticationView: View {
                         .cornerRadius(25)
                         .shadow(color: .arcticBlue, radius: 5)
                     }
-                    .disabled(hasPressedSignIn)
+                    .disabled(viewModel.hasPressedSignIn)
                     .padding(40)
                     .padding(.top, 60)
                     .padding(.bottom, 60)
@@ -142,7 +138,7 @@ struct AuthenticationView: View {
         }
         .alert(isPresented: .constant(viewModel.error != nil), error: viewModel.error) {
             Button("OK", role: .cancel) {
-                viewModel.error = nil ;hasPressedSignUp = false ;hasPressedSignIn = false
+                viewModel.error = nil ;viewModel.hasPressedSignUp = false ;viewModel.hasPressedSignIn = false
             }
         }
     }
