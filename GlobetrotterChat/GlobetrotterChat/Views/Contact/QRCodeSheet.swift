@@ -67,7 +67,7 @@ struct QRCodeView: View {
                     .frame(width: 200, height: 200)
                     .padding()
             } else {
-                Text("QR-Code wird generiert...")
+                Text("QR code is generated...")
                     .padding()
             }
         }

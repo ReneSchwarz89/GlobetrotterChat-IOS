@@ -124,7 +124,7 @@ struct ChatView: View {
 
                 // Textfeld und Senden-Button unten fixieren
                 HStack {
-                    TextField("Nachricht eingeben...", text: $viewModel.newMessageText)
+                    TextField("Type a Message...", text: $viewModel.newMessageText)
                         .padding()
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(10)

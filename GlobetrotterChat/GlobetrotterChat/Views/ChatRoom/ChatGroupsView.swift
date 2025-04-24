@@ -10,15 +10,14 @@ import Observation
 
 struct ChatGroupsView: View {
     @Bindable var viewModel: ChatGroupsViewModel
-    @State private var tabBar: UITabBar! = nil
     
     var body: some View {
         NavigationStack {
             VStack {
                 List(viewModel.chatGroups) { chatGroup in
                     NavigationLink(destination: ChatView(chatGroup: chatGroup)
-                        .onAppear { tabBar.isHidden = true }
-                        .onDisappear { tabBar.isHidden = false }) {
+                        .onAppear { viewModel.tabBar.isHidden = true }
+                        .onDisappear { viewModel.tabBar.isHidden = false }) {
                             HStack {
                                 if chatGroup.isGroup {
                                     if let url = URL(string: chatGroup.groupPictureURL ?? "") {
@@ -97,7 +96,7 @@ struct ChatGroupsView: View {
                     AddChatGroupSheet(viewModel: viewModel)
                 }
                 .background(TabBarAccessor { tabbar in
-                    self.tabBar = tabbar
+                    viewModel.tabBar = tabbar
                 })
                 .onAppear {
                     viewModel.isTabBarVisible = true

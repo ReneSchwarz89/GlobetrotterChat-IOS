@@ -22,6 +22,7 @@ import UIKit
     var showAlert = false
     var alertMessage = ""
     var isTabBarVisible = true
+    var tabBar: UITabBar! = nil
     
     private var manager: ChatGroupsManagerProtocol
     var uid: String { return manager.uid }

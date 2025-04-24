@@ -15,6 +15,7 @@
 		B54ED3362CA6AF9900B84954 /* ContactManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3352CA6AF9500B84954 /* ContactManagerProtocol.swift */; };
 		B54ED33D2CB40ABB00B84954 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED33C2CB40ABB00B84954 /* FirebaseStorageManager.swift */; };
 		B54ED3432CB8183F00B84954 /* ContactRelations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54ED3422CB8183400B84954 /* ContactRelations.swift */; };
+		B552852F2DBAD65700B9362B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B552852E2DBAD65700B9362B /* Localizable.xcstrings */; };
 		B5754AD72C8E25FF0010B5F5 /* GlobetrotterChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */; };
 		B5754AD92C8E25FF0010B5F5 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5754AD82C8E25FF0010B5F5 /* AuthenticationView.swift */; };
 		B5754ADB2C8E26000010B5F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5754ADA2C8E26000010B5F5 /* Assets.xcassets */; };
@@ -61,6 +62,7 @@
 		B54ED3352CA6AF9500B84954 /* ContactManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactManagerProtocol.swift; sourceTree = "<group>"; };
 		B54ED33C2CB40ABB00B84954 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
 		B54ED3422CB8183400B84954 /* ContactRelations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRelations.swift; sourceTree = "<group>"; };
+		B552852E2DBAD65700B9362B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		B5754AD32C8E25FF0010B5F5 /* GlobetrotterChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlobetrotterChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5754AD62C8E25FF0010B5F5 /* GlobetrotterChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobetrotterChatApp.swift; sourceTree = "<group>"; };
 		B5754AD82C8E25FF0010B5F5 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
@@ -213,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				B5754AFB2C8E3A670010B5F5 /* GoogleService-Info.plist */,
+				B552852E2DBAD65700B9362B /* Localizable.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -334,6 +337,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = B5754ACA2C8E25FF0010B5F5;
 			packageReferences = (
@@ -355,6 +359,7 @@
 			files = (
 				B5754ADE2C8E26000010B5F5 /* Preview Assets.xcassets in Resources */,
 				B5754ADB2C8E26000010B5F5 /* Assets.xcassets in Resources */,
+				B552852F2DBAD65700B9362B /* Localizable.xcstrings in Resources */,
 				B5754AFC2C8E3A670010B5F5 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -464,6 +469,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -520,6 +526,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
